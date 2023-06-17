@@ -2,19 +2,17 @@
   <defs>
     <linearGradient id="textGradient" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="400" y2="0">
       <stop offset="0%" stop-color="#0000FF" />
-      <stop offset="25%" stop-color="#808080" />
+      <stop offset="66%" stop-color="#808080" />
     </linearGradient>
     <clipPath id="textClipPath">
       <text x="0" y="80" font-family="Arial" font-size="60" fill="url(#textGradient)">
-        HealthChain!!!
+        HealthChain
       </text>
     </clipPath>
   </defs>
   
   <text x="0" y="80" font-family="Arial" font-size="60" fill="url(#textGradient)" clip-path="url(#textClipPath)">
-    Health
+    HealthChain
   </text>
-  <text x="200" y="80" font-family="Arial" font-size="60" fill="url(#textGradient)" >
-    Chain
-  </text>
+
 </svg>
