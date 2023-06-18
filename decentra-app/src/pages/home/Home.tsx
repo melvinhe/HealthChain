@@ -2,13 +2,25 @@ import { useState, ChangeEvent } from "react";
 import { Link } from "react-router-dom";
 
 export function Home(): JSX.Element {
-    const [requests, setRequests] = useState([
-      { id: 1, company: "United Health", walletAddress: "0x5EARpNkdPyj1myCfwXyqtF6PtDXexKYWgJxE38G9Kor4sHrd" },
-      { id: 2, company: "Sam Bankman-Fried", walletAddress: "0xsAM3ankmm4n5r13d" },
-    ]);
+  type SignedJson = {
+    id: number,
+    json_string: string,
+    address: string
+  }
+
+  type Requests = {
+    id: number,
+    company: string,
+    walletAddress: string
+  }
+    const [requests, setRequests] = useState<Requests[]>([]);
+    const [signedPatients, setSignedPatients] = useState<SignedJson[]>([]);
+    const [jsonData, setJsonData] = useState<object[]>([{}]);
+    const [isInvalidJSON, setIsInvalidJSON] = useState<boolean>(false);
 
     const handleAccept = (id: number) => {
       // Handle accept action for the request with the given ID
+      setRequests(requests.filter((item) => item.id !== id))
       console.log(`Accepted request with ID: ${id}`);
     };
 
@@ -18,15 +30,27 @@ export function Home(): JSX.Element {
       console.log(`Rejected request with ID: ${id}`);
     };
 
-    const handleAcceptData = (id: number) => {
-      console.log(`Accepted request with ID: ${id}`);
+    const handleAcceptData = (hash_json: string) => {
+      signedPatients.push({id: 0, json_string: hash_json, address: "0x5EARpNkdPyj1myCfwXyqtF6PtDXexKYWgJxE38G9Kor4sHrd"} as SignedJson)
+      setJsonData(jsonData.filter((item) => JSON.stringify(item) !== hash_json));
+      console.log(`Accepted request with JSON: ${hash_json}`);
     }
 
-    const handleRejectData = (id : number) => {
-      console.log(`Rejected request with ID: ${id}`);
+    const buyInfo = (id: number) => {
+      requests.push({ id: 1, company: "United Health", walletAddress: "0x5EARpNkdPyj1myCfwXyqtF6PtDXexKYWgJxE38G9Kor4sHrd" } as Requests)
+      requests.push({ id: 2, company: "Sam Bankman-Fried", walletAddress: "0xsAM3ankmm4n5r13d" } as Requests)
+      setSignedPatients(signedPatients.filter((item) => item.id !== id))
     }
-  const [jsonData, setJsonData] = useState<object>({});
-  const [isInvalidJSON, setIsInvalidJSON] = useState<boolean>(false);
+
+    const rejectInfo = (id: number) => {
+      setSignedPatients(signedPatients.filter((item) => item.id !== id))
+    }
+
+    const handleRejectData = (hash_json: string) => {
+      setJsonData(jsonData.filter((item) => JSON.stringify(item) !== hash_json));
+      console.log(`Rejected request with JSON: ${hash_json}`);
+    }
+
 
   const postData = async (url_endpoint: string, data: string) => {
     try {
@@ -59,7 +83,7 @@ export function Home(): JSX.Element {
       reader.onload = (e) => {
         try {
           const json = JSON.parse(e.target?.result as string);
-          setJsonData(json);
+          setJsonData([json]);
           setIsInvalidJSON(false);
         } catch (error) {
           setIsInvalidJSON(true);
@@ -75,6 +99,7 @@ export function Home(): JSX.Element {
   const [showHome, setShowHome] = useState(true);
   const [showBuyer, setShowBuyer] = useState(false);
   const [showHospital, setShowHospital] = useState(false);
+  const [showValidJsons, setShowValidJsons] = useState(false)
 
   const hideComponent = (componentName: string): void => {
     switch (componentName) {
@@ -519,14 +544,66 @@ export function Home(): JSX.Element {
             <input type="file" style={{ width: "150px" }} />
           </div>
           <div style={{ textAlign: "center", marginTop: "20px" }}>
-        <button type="button" onClick={() => {}}>
+        <button type="button" onClick={() => setShowValidJsons(true)}>
           Submit
         </button>
       </div>
+      {showValidJsons && signedPatients.map((patient) => (
+            <div
+              key={patient.id}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                border: "1px solid #ccc",
+                padding: "10px",
+                marginBottom: "10px",
+              }}
+            >
+              <div style={{ flex: "1" }}>
+                <h2
+                  style={{
+                    fontSize: "1.5rem",
+                    fontWeight: "bold",
+                    color: "black",
+                  }}
+                >
+                  {patient.address}
+                </h2>
+                <p style={{ color: "#666" }}>{patient.address}</p>
+              </div>
+              <div>
+                <button
+                  type="button"
+                  onClick={() => buyInfo(patient.id)}
+                  style={{
+                    backgroundColor: "green",
+                    color: "white",
+                    padding: "8px 16px",
+                    marginRight: "8px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Accept
+                </button>
+                <button
+                  type="button"
+                  onClick={() => rejectInfo(patient.id)}
+                  style={{
+                    backgroundColor: "red",
+                    color: "white",
+                    padding: "8px 16px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Reject
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
-      {showHospital && (
+      {showHospital && (jsonData.map((single_data) => (
           <div
             key={0}
             style={{
@@ -545,14 +622,17 @@ export function Home(): JSX.Element {
                   color: "black",
                 }}
               >
-                {JSON.stringify(jsonData)}
+              Patient: 0x5EARpNkdPyj1myCfwXyqtF6PtDXexKYWgJxE38G9Kor4sHrd
               </h2>
-              <p style={{ color: "#666" }}>0x5EARpNkdPyj1myCfwXyqtF6PtDXexKYWgJxE38G9Kor4sHrd</p>
+              <p style={{ color: "#666" }}>
+              {JSON.stringify(single_data)}
+              </p>
+
             </div>
             <div>
               <button
                 type="button"
-                onClick={() => handleAcceptData(0)}
+                onClick={() => handleAcceptData(JSON.stringify(single_data))}
                 style={{
                   backgroundColor: "green",
                   color: "white",
@@ -565,7 +645,7 @@ export function Home(): JSX.Element {
               </button>
               <button
                 type="button"
-                onClick={() => handleRejectData(0)}
+                onClick={() => handleRejectData(JSON.stringify(single_data))}
                 style={{
                   backgroundColor: "red",
                   color: "white",
@@ -576,7 +656,7 @@ export function Home(): JSX.Element {
                 Reject
               </button>
             </div>
-          </div>
+          </div>))
         
       )}
     </div>
