@@ -5,6 +5,7 @@ from cryptography.hazmat.primitives import serialization
 from flask import Flask
 from flask import request
 
+from HealthChainClient.node_operations import get_all_nodes, parse_node
 from data_processing import clean_fhir_data
 from encryption import create_keys_if_empty, chain_data_verifier_transaction
 
@@ -70,13 +71,34 @@ def get_pub_b_():
 
 @app.route('/get-valid-patients', methods=["GET"])
 def get_valid_patients():
-    pass
+    """
+    Given criteria of patient_diseases, search and get the number of patients from the blockchain who match
+    :return: list of uuid records of P
+    """
+    valid_conditions = []
+    for condition in request.args.getlist("condition"):
+        valid_conditions.append(condition)
 
+    # Iterate through all valid nodes on blockchain, if it's a node with metadata try to read its metadata
+    node_list = get_all_nodes()
+    # return uuids of all nodes
+
+    valid_patients = []
+    for node_address in node_list:
+        node_data = parse_node(node_address)
+        if not node_data:
+            continue
+        metadata = node_data[1]
+        for valid_condition in valid_conditions:
+            if valid_condition in metadata.get("conditions", []):
+                valid_patients.append(node_data)
+
+    return {"num_patients": len(valid_patients)+1}
 
 @app.route('/decode-patient-data', methods=["POST"])
 def decode_data():
     """
-    Given POINTEr TO PubA(Data) + metadata we execute the followin transactions
+    Given Pointer TO PubA(Data) + metadata we execute the followin transactions
 
     1. Return PubB(PrivA) (logged as transaction on change)
     2. Use PrivB(1) --> PrivA
