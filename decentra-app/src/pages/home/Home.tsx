@@ -41,6 +41,37 @@ export function Home(): JSX.Element {
     console.log(`Accepted request with ID: ${id}`);
   };
 
+  async function handlePostRequest(url_: string, json_ob: object, ): Promise<string> {
+    try {
+      const url = url_;
+      const requestData = json_ob
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        console.log("POST request successful:", responseData);
+        return responseData
+        // Do something with the response data
+      } else {
+        console.log("POST request failed:", response.status);
+        return "";
+        // Handle the error case
+      }
+    } catch (error) {
+      console.log("Error:", error);
+      return ""
+      // Handle any errors during the request
+    }
+  };
+
+
   const handleReject = (id: number) => {
     // Handle reject action for the request with the given ID
     setRequests(requests.filter((item) => item.id !== id))
