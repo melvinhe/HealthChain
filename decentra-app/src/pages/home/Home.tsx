@@ -1,25 +1,32 @@
-import { useState, ChangeEvent, useEffect } from "react";
+import React, { useState, ChangeEvent, useEffect } from "react";
 import { GearApi, IMessageSendOptions, getProgramMetadata } from '@gear-js/api';
 import { u128 } from "@polkadot/types";
 
-export function Home(): JSX.Element {
-  type SignedJson = {
-    id: number,
-    json_string: string,
-    address: string
-  }
+export type SignedJson = {
+  id: number,
+  json_string: string,
+  address: string
+};
 
-  type Requests = {
-    id: number,
-    company: string,
-    walletAddress: string,
-    value: u128
-  }
+export type Requests = {
+  id: number,
+  company: string,
+  walletAddress: string,
+  value: u128
+};
+
+export function Home(): JSX.Element {
+
   const [requests, setRequests] = useState<Requests[]>([]);
   const [signedPatients, setSignedPatients] = useState<SignedJson[]>([]);
   const [jsonData, setJsonData] = useState<object[]>([{}]);
   const [isInvalidJSON, setIsInvalidJSON] = useState<boolean>(false);
   const [gearApi, setGearApi] = useState<GearApi | null>(null);
+  const [compensation, setCompensation] = useState(0);
+
+  const handleCompensationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCompensation(e.target.valueAsNumber);
+  }
 
   useEffect(() => {
     GearApi.create().then(setGearApi);
@@ -56,10 +63,10 @@ export function Home(): JSX.Element {
 
   const handleAccept = async (id: number) => {
     // Handle accept action for the request with the given ID
-    
+
     const message: IMessageSendOptions = {
       destination: "0xbb26ebb3ff72ebd67c01b3086e9cd197dd52eb2c718318ca292682497f6fb9c4",
-      payload: { "Sell": { } },
+      payload: { "Sell": {} },
       value: requests[0].value,
       gasLimit: 100_000_000_000
     }
@@ -81,18 +88,28 @@ export function Home(): JSX.Element {
   };
 
   const handleAcceptData = (hash_json: string) => {
-    signedPatients.push({ id: 0, json_string: hash_json, address: "0x5EARpNkdPyj1myCfwXyqtF6PtDXexKYWgJxE38G9Kor4sHrd" } as SignedJson)
+    setSignedPatients([...signedPatients, { id: 0, json_string: hash_json, address: "0x5EARpNkdPyj1myCfwXyqtF6PtDXexKYWgJxE38G9Kor4sHrd" } as SignedJson])
     setJsonData(jsonData.filter((item) => JSON.stringify(item) !== hash_json));
     console.log(`Accepted request with JSON: ${hash_json}`);
   }
 
-  const buyInfo = (id: number) => {
-    requests.push({ id: 1, company: "United Health", walletAddress: "0x5EARpNkdPyj1myCfwXyqtF6PtDXexKYWgJxE38G9Kor4sHrd" } as Requests)
-    requests.push({ id: 2, company: "Sam Bankman-Fried", walletAddress: "0xsAM3ankmm4n5r13d" } as Requests)
+  const buyInfo = (id: number, comp: number) => {
+    setRequests([...requests, {
+      id: 1,
+      company: "United Health",
+      walletAddress: "0x5EARpNkdPyj1myCfwXyqtF6PtDXexKYWgJxE38G9Kor4sHrd",
+      value: comp as unknown as u128
+    } as Requests])
+    setRequests([...requests, { 
+      id: 2, 
+      company: "Sam Bankman-Fried", 
+      walletAddress: "0xsAM3ankmm4n5r13d",
+      value: comp as unknown as u128
+    } as Requests])
     setSignedPatients(signedPatients.filter((item) => item.id !== id))
   }
 
-  const rejectInfo = (id: number) => {
+  const rejectInfo = (id: number, comp: number) => {
     setSignedPatients(signedPatients.filter((item) => item.id !== id))
   }
 
@@ -100,7 +117,6 @@ export function Home(): JSX.Element {
     setJsonData(jsonData.filter((item) => JSON.stringify(item) !== hash_json));
     console.log(`Rejected request with JSON: ${hash_json}`);
   }
-
 
   const postData = async (url_endpoint: string, data: string) => {
     try {
@@ -149,7 +165,7 @@ export function Home(): JSX.Element {
   const [showHome, setShowHome] = useState(true);
   const [showBuyer, setShowBuyer] = useState(false);
   const [showHospital, setShowHospital] = useState(false);
-  const [showValidJsons, setShowValidJsons] = useState(false)
+  const [showValidJsons, setShowValidJsons] = useState(false);
 
   const hideComponent = (componentName: string): void => {
     switch (componentName) {
@@ -293,10 +309,6 @@ export function Home(): JSX.Element {
 
       {showPatient && (
         <div style={{ flex: 1, marginLeft: "20px", marginBottom: "20px" }}>
-          <h3 style={{ color: "black" }}>
-            Put Your Health Data Back in Your Control: Embrace HealthChain,
-            Securing Your EHR with Blockchain.
-          </h3>
           <div
             style={{
               border: "2px dashed black",
@@ -308,7 +320,22 @@ export function Home(): JSX.Element {
             }}
           >
             {/* Drag and drop block */}
-            <div style={{ display: "flex" }}>
+            <form className="form">
+            <label
+                htmlFor="file-upload"
+                style={{ cursor: "pointer", color: "black" }}
+              >
+                Choose File
+                <input
+                  type="file"
+                  accept=".json"
+                  onChange={handleFileUpload}
+                  style={{ display: "none" }}
+                  id="file-upload"
+                />
+              </label>
+            </form>
+            {/* <div style={{ display: "flex" }}>
               <p style={{ marginRight: "10px", color: "black" }}>
                 Drag and drop a JSON file here or click to browse:
               </p>
@@ -325,7 +352,7 @@ export function Home(): JSX.Element {
                   id="file-upload"
                 />
               </label>
-            </div>
+            </div> */}
             {isInvalidJSON && <p style={{ color: "red" }}>Invalid JSON file</p>}
             {jsonData && (
               <div>
@@ -576,7 +603,8 @@ export function Home(): JSX.Element {
               marginTop: "-10px",
             }}
           >
-            <input type="number" style={{ width: "150px" }} />
+            <input type="number" style={{ width: "150px" }}
+              value={compensation} onChange={handleCompensationChange} />
           </div>
           <p style={{ color: "#333333" }}>
             Upload your research protocol: Download this template. We will
@@ -598,7 +626,7 @@ export function Home(): JSX.Element {
               Submit
             </button>
           </div>
-          {showValidJsons && signedPatients.map((patient) => (
+          {showValidJsons && signedPatients.map((patient, index) => (
             <div
               key={patient.id}
               style={{
@@ -617,14 +645,14 @@ export function Home(): JSX.Element {
                     color: "black",
                   }}
                 >
-                  {patient.address}
+                  Patient #{index}
                 </h2>
                 <p style={{ color: "#666" }}>{patient.address}</p>
               </div>
               <div>
                 <button
                   type="button"
-                  onClick={() => buyInfo(patient.id)}
+                  onClick={() => buyInfo(patient.id, compensation)}
                   style={{
                     backgroundColor: "green",
                     color: "white",
@@ -637,7 +665,7 @@ export function Home(): JSX.Element {
                 </button>
                 <button
                   type="button"
-                  onClick={() => rejectInfo(patient.id)}
+                  onClick={() => rejectInfo(patient.id, compensation)}
                   style={{
                     backgroundColor: "red",
                     color: "white",
