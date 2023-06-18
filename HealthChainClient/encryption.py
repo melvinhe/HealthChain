@@ -20,9 +20,17 @@ def chain_data_verifier_transaction(data, metadata):
     private_key_verified = load_key(path='verifier.pem', private=True)
     public_key_verified = load_key(path='verifier.pub', private=False)
 
-    signature = sign_message(pub_key.encrypt(data) + metadata, private_key)
+    signature_patient = sign_message(encrypt_message(data, pub_key) + metadata, private_key)
 
-    # private_key.sign(public_key.encrypt(data) + metadata)
+    valid_message = verify_signed_message(signature_patient, encrypt_message(data, pub_key) + metadata, public_key)
+
+    if not valid_message:
+        raise ValueError("Patient data was not signed by patient")
+
+    signature_verifier = sign_message(encrypt_message(data, pub_key) + metadata, private_key_verified)
+
+    return signature_patient, signature_verifier, public_key_verified
+
 
 def create_keys_if_empty():
     if not (os.path.exists('key.pem') and os.path.exists('key.pub')):
@@ -105,14 +113,39 @@ def verify_signed_message(signature, message, public_key):
 
 
 def encrypt_message(message, public_key):
-    pass
+    encrypted_message = public_key.encrypt(
+        message,
+        padding.OAEP(
+            mgf=padding.MGF1(algorithm=hashes.SHA256()),
+            algorithm=hashes.SHA256(),
+            label=None
+        )
+    )
+    return encrypted_message
 
-def decrypt_message(message, private_key):
-    pass
+
+def decrypt_message(encrypted_message, private_key):
+    # Decrypt the message with the private key
+    decrypted_message = private_key.decrypt(
+        encrypted_message,
+        padding.OAEP(
+            mgf=padding.MGF1(algorithm=hashes.SHA256()),
+            algorithm=hashes.SHA256(),
+            label=None
+        )
+    )
+    return decrypted_message
+
 
 if __name__ == '__main__':
-    # create_private_key()
     private_key = load_key(path='key.pem', private=True)
     public_key = load_key(path='key.pub')
-    signature = sign_message(b'Test', private_key)
+
+    encrypted_message = encrypt_message(b'hello', public_key)
+    decrypted_message = decrypt_message(encrypted_message, private_key)
+    print(b'hello', decrypted_message)
+
+    document = b'Test'
+    signature = sign_message(document, private_key)
     message_status = verify_signed_message(signature, b'Test', public_key)
+    print(f"Signature for {document} is determined to have validity status of {message_status}")
