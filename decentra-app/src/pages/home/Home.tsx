@@ -280,57 +280,58 @@ export function Home(): JSX.Element {
           <p style={{ color: "#333333" }}>
             Inclusion criteria: Enter names of conditions that should be present in participants&apos; medical histories
           </p>
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "10px" }}>
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "5px", marginTop: "-10px" }}>
             <input type="text" />
           </div>
           <p style={{ color: "#333333" }}>
             Exclusion criteria: Enter names of conditions that should preclude patients from being included in your cohort present in participants&apos; medical histories
           </p>
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "10px" }}>
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "5px", marginTop: "-10px" }}>
             <input type="text" />
           </div>
           <p style={{ color: "#333333" }}>
             We found X people on HealthChain that meet your eligibility criteria. To submit a request for data, fill out the rest of the form. We will review the information you submit, and if approved, share it with the patients in the cohort defined above.
           </p>
           <p style={{ color: "#333333" }}>
-            Study Title: Enter a brief title that describes what you&apos;re doing (e.g., "screening patients for eligibility for a clinical trial on a lung cancer drug", "retrospective comparative effectiveness study on diabetes drugs")
+            Study Title: Enter a brief title that describes what you&apos;re doing (e.g., &quot;screening patients for eligibility for a clinical trial on a lung cancer drug&quot;, &quot;retrospective comparative effectiveness study on diabetes drugs&quot;)
           </p>
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "10px" }}>
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "5px", marginTop: "-10px" }}>
             <input type="text" />
           </div>
           <p style={{ color: "#333333" }}>
             Do you require patient contact information? If yes, patients may be less inclined to opt into your research study. However, contact information may be necessary for following up with patients, notifying them about a clinical trial that they&apos;re eligible for, or sharing your research findings. If no, you will receive HRs with contact information redacted.
           </p>
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "10px" }}>
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "5px", marginTop: "-10px" }}>
             <button type="button" style={{ marginRight: "10px" }}>Yes</button>
             <button type="button">No</button>
           </div>
           <p style={{ color: "#333333" }}>
             Minimum number of participants needed to conduct your study: Not all eligible people on HealthChain will consent. Enter the minimum cohort size to run your study.
           </p>
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "10px" }}>
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "5px", marginTop: "-10px" }}>
             <input type="number" style={{ width: "150px" }} />
           </div>
           <p style={{ color: "#333333" }}>
             Enter the last date by which patients need to decide when you want to receive the data: If your minimum cohort size is not met, we will notify you on this date. You will still be able to submit another request for data.
           </p>
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "10px" }}>
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "5px", marginTop: "-10px" }}>
             <input type="date" style={{ width: "150px" }} />
           </div>
           <p style={{ color: "#333333" }}>
             How much will you compensate each patient who opts in? This will incentivize people to share their data - especially patients who are not particularly ill or have a lot to gain from health recommendations.
           </p>
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "10px" }}>
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "5px", marginTop: "-10px" }}>
             <input type="number" style={{ width: "150px" }} />
           </div>
           <p style={{ color: "#333333" }}>
             Upload your research protocol: Download this template. We will review it and (1) accept it (and send out the request for data to patients), (2) request revisions, or (3) reject.
           </p>
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "10px" }}>
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "5px", marginTop: "-10px" }}>
             <input type="file" style={{ width: "150px" }} />
           </div>
         </div>
       )}
+
 
 
 
