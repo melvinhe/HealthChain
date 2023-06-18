@@ -2,8 +2,31 @@ import { useState, ChangeEvent } from "react";
 import { Link } from "react-router-dom";
 
 export function Home(): JSX.Element {
-  const [jsonData, setJsonData] = useState<object | null>(null);
+  const [jsonData, setJsonData] = useState<object>({});
   const [isInvalidJSON, setIsInvalidJSON] = useState<boolean>(false);
+
+  const postData = async (url_endpoint: string, data: string) => {
+    try {
+      const response = await fetch(url_endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        console.log("POST request successful!");
+        // Handle successful response
+      } else {
+        console.log("POST request failed!");
+        // Handle error response
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      // Handle network error
+    }
+  };
 
   const handleFileUpload = (event: ChangeEvent<HTMLInputElement>): void => {
     const file = event.target.files?.[0];
@@ -22,6 +45,7 @@ export function Home(): JSX.Element {
 
       reader.readAsText(file);
     }
+    postData("http://localhost:3000", JSON.stringify(jsonData));
   };
 
   return (
