@@ -28,6 +28,7 @@ def encode_data():
     # TODO: validate formatting using FHIR validators
     fhir_data = request.get_json()
     fhir_metadata, phi = clean_fhir_data(fhir_data)
+
     return "OK", 201, {}
 
 

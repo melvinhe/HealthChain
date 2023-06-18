@@ -9,6 +9,21 @@ from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives import serialization
 
 
+def chain_data_verifier_transaction(data, metadata):
+    """
+    a. create signature with private_keyA(pubkey(data)+metadata)) + pubkeyA(data)+metadata) pubkey(a) return privh(pubkey(data)+metadata))
+    :return:
+    """
+    private_key = load_key(path='key.pem', private=True)
+    pub_key = load_key(path='key.pub', private=False)
+
+    private_key_verified = load_key(path='verifier.pem', private=True)
+    public_key_verified = load_key(path='verifier.pub', private=False)
+
+    signature = sign_message(pub_key.encrypt(data) + metadata, private_key)
+
+    # private_key.sign(public_key.encrypt(data) + metadata)
+
 def create_keys_if_empty():
     if not (os.path.exists('key.pem') and os.path.exists('key.pub')):
         create_private_key()
@@ -89,59 +104,11 @@ def verify_signed_message(signature, message, public_key):
         return False
 
 
-def run():
-    # Generate a private/public key pair
-    private_key = rsa.generate_private_key(
-        public_exponent=65537,
-        key_size=2048
-    )
-    public_key = private_key.public_key()
+def encrypt_message(message, public_key):
+    pass
 
-    # Serialize the private/public keys
-    private_pem = private_key.private_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PrivateFormat.PKCS8,
-        encryption_algorithm=serialization.NoEncryption()
-    )
-    public_pem = public_key.public_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PublicFormat.SubjectPublicKeyInfo
-    )
-
-    # Encrypt the message with the public key
-    message = b"Hello World"
-    encrypted_message = public_key.encrypt(
-        message,
-        padding.OAEP(
-            mgf=padding.MGF1(algorithm=hashes.SHA256()),
-            algorithm=hashes.SHA256(),
-            label=None
-        )
-    )
-
-    # Decrypt the message with the private key
-    decrypted_message = private_key.decrypt(
-        encrypted_message,
-        padding.OAEP(
-            mgf=padding.MGF1(algorithm=hashes.SHA256()),
-            algorithm=hashes.SHA256(),
-            label=None
-        )
-    )
-
-    print("Original Message: ", message)
-    print("Encrypted Message: ", encrypted_message)
-    print("Decrypted Message: ", decrypted_message)
-
-    signature = private_key.sign(
-        message,
-        padding.PSS(
-            mgf=padding.MGF1(hashes.SHA256()),
-            salt_length=padding.PSS.MAX_LENGTH,
-        ),
-        hashes.SHA256(),
-    )
-
+def decrypt_message(message, private_key):
+    pass
 
 if __name__ == '__main__':
     # create_private_key()
