@@ -4,4 +4,25 @@
   & > *:not(:last-child) {
     margin-right: 24px;
   }
+
+  .bubbleLink {
+    display: inline-block;
+    position: relative;
+    border-radius: 20px;
+    padding: 8px 16px;
+    background-color: #ccc;
+    color: black;
+    text-decoration: none;
+  }
+
+  .bubble {
+    position: absolute;
+    top: 50%;
+    right: -8px;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    background-color: #ccc;
+    border-radius: 50%;
+  }
 }

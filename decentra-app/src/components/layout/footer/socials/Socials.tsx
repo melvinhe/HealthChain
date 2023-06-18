@@ -1,27 +1,35 @@
-import { ReactComponent as Twitter } from 'assets/images/socials/twitter.svg';
-import { ReactComponent as Github } from 'assets/images/socials/github.svg';
-import { ReactComponent as Discord } from 'assets/images/socials/polkadot.svg';
-import { ReactComponent as Medium } from 'assets/images/socials/medium.svg';
+import React from 'react';
 import styles from './Socials.module.scss';
 
-const socials = [
-  { href: 'https://twitter.com/gear_techs', icon: Twitter },
-  { href: 'https://github.com/gear-tech', icon: Github },
-  { href: 'https://discord.com/invite/7BQznC9uD9', icon: Discord },
-  { href: 'https://medium.com/@gear_techs', icon: Medium },
+const teamMembers = [
+  { name: 'Melvin He', github: 'https://github.com/melvinhe' },
+  { name: 'Seong-Heon Jung', github: 'https://github.com/Forthoney' },
+  { name: 'Jay Khurana', github: 'https://github.com/jaykk128' },
+  { name: 'Peter Li', github: 'https://github.com/lipet2k' },
+  { name: 'Eli Silvert', github: 'https://github.com/elisilvert' },
 ];
 
-function Socials() {
-  const getItems = () =>
-    socials.map(({ href, icon: Icon }) => (
-      <li key={href}>
-        <a href={href} target="_blank" rel="noreferrer">
-          <Icon />
-        </a>
-      </li>
-    ));
 
-  return <ul className={styles.socials}>{getItems()}</ul>;
+function Socials() {
+  return (
+    <span className={styles.leftPart} style={{ color: 'black' }}>
+      {'</>'} with ❤️ by&nbsp;
+      {teamMembers.map((member, index) => (
+        <React.Fragment key={member.name}>
+          <a
+            href={member.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.bubbleLink}
+          >
+            {member.name}
+            <span className={styles.bubble} />
+          </a>
+          {index !== teamMembers.length - 1 && ', '}
+        </React.Fragment>
+      ))}
+    </span>
+  );
 }
 
 export { Socials };

@@ -218,7 +218,7 @@ export function Home(): JSX.Element {
       {/* Main content */}
 
       {showPatient && (
-        <div style={{ flex: 1, marginLeft: "20px" }}>
+        <div style={{ flex: 1, marginLeft: "20px", marginBottom: "20px" }}>
           <h3 style={{ color: "black" }}>
             Put Your Health Data Back in Your Control: Embrace HealthChain,
             Securing Your EHR with Blockchain.
@@ -229,9 +229,11 @@ export function Home(): JSX.Element {
               borderRadius: "10px",
               padding: "20px",
               marginTop: "20px",
+              marginBottom: "20px",
               backgroundColor: "#f2f2f2",
             }}
           >
+            {/* Drag and drop block */}
             <div style={{ display: "flex" }}>
               <p style={{ marginRight: "10px", color: "black" }}>
                 Drag and drop a JSON file here or click to browse:
@@ -260,6 +262,7 @@ export function Home(): JSX.Element {
               </div>
             )}
           </div>
+          {/* List of company requests */}
           {requests.map((request) => (
             <div
               key={request.id}
@@ -272,13 +275,20 @@ export function Home(): JSX.Element {
               }}
             >
               <div style={{ flex: "1" }}>
-                <h2 style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
+                <h2
+                  style={{
+                    fontSize: "1.5rem",
+                    fontWeight: "bold",
+                    color: "black",
+                  }}
+                >
                   {request.company}
                 </h2>
                 <p style={{ color: "#666" }}>{request.walletAddress}</p>
               </div>
               <div>
                 <button
+                  type="button"
                   onClick={() => handleAccept(request.id)}
                   style={{
                     backgroundColor: "green",
@@ -291,6 +301,7 @@ export function Home(): JSX.Element {
                   Accept
                 </button>
                 <button
+                  type="button"
                   onClick={() => handleReject(request.id)}
                   style={{
                     backgroundColor: "red",
@@ -306,6 +317,7 @@ export function Home(): JSX.Element {
           ))}
         </div>
       )}
+
 
       {showHome && (
         <div
