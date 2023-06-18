@@ -1,4 +1,5 @@
 import os
+import json
 
 from cryptography.hazmat.primitives import hashes
 
@@ -110,41 +111,51 @@ def verify_signed_message(signature, message, public_key):
 
 
 def encrypt_message(message, public_key):
-    encrypted_message = public_key.encrypt(
-        message,
-        padding.OAEP(
-            mgf=padding.MGF1(algorithm=hashes.SHA256()),
-            algorithm=hashes.SHA256(),
-            label=None
+    encrypted_payload = {}
+
+    for i in range(0, len(message), 100):
+        encrypted_message_fraction = public_key.encrypt(
+            message[i:i + 100],
+            padding.OAEP(
+                mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                algorithm=hashes.SHA256(),
+                label=None
+            )
         )
-    )
-    return encrypted_message
+        encrypted_payload[i] = encrypted_message_fraction
+    return encrypted_payload
 
 
-def decrypt_message(encrypted_message, private_key):
+def decrypt_message(encrypted_message: dict, private_key):
     # Decrypt the message with the private key
-    decrypted_message = private_key.decrypt(
-        encrypted_message,
-        padding.OAEP(
-            mgf=padding.MGF1(algorithm=hashes.SHA256()),
-            algorithm=hashes.SHA256(),
-            label=None
+    keys = sorted([x for x in encrypted_message])
+    decrypted_fractions = []
+    for key in keys:
+        decrypted_fraction = private_key.decrypt(
+            encrypted_message[key],
+            padding.OAEP(
+                mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                algorithm=hashes.SHA256(),
+                label=None
+            )
         )
-    )
-    return decrypted_message
+        decrypted_fractions.append(decrypted_fraction)
+    return b''.join(decrypted_fractions)
 
 
 if __name__ == '__main__':
     private_key = load_key(path='key.pem', private=True)
     public_key = load_key(path='key.pub')
 
-    message = b'hello'
+    with open('../patient_data_single.json') as f:
+        message = json.dumps(json.load(f), indent=2).encode('utf-8')
 
     encrypted_message = encrypt_message(message, public_key)
     decrypted_message = decrypt_message(encrypted_message, private_key)
     print(f"Original message {message} was encrypted and decrypted to {message}")
+    assert message == decrypted_message, "Decrypted message didn't match original"
 
-    document = b'Test'
+    document = message
     signature = sign_message(document, private_key)
-    message_status = verify_signed_message(signature, b'Test', public_key)
+    message_status = verify_signed_message(signature, document, public_key)
     print(f"Signature for {document} is determined to be {'valid' if message_status else 'invalid'}")
