@@ -1,8 +1,5 @@
 import os
 
-from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.primitives.asymmetric import padding
-# from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives import hashes
 
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
@@ -141,11 +138,13 @@ if __name__ == '__main__':
     private_key = load_key(path='key.pem', private=True)
     public_key = load_key(path='key.pub')
 
-    encrypted_message = encrypt_message(b'hello', public_key)
+    message = b'hello'
+
+    encrypted_message = encrypt_message(message, public_key)
     decrypted_message = decrypt_message(encrypted_message, private_key)
-    print(b'hello', decrypted_message)
+    print(f"Original message {message} was encrypted and decrypted to {message}")
 
     document = b'Test'
     signature = sign_message(document, private_key)
     message_status = verify_signed_message(signature, b'Test', public_key)
-    print(f"Signature for {document} is determined to have validity status of {message_status}")
+    print(f"Signature for {document} is determined to be {'valid' if message_status else 'invalid'}")
