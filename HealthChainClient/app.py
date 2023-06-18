@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import request
 
+from data_processing import clean_fhir_data
 from encryption import create_keys_if_empty
 
 app = Flask(__name__)
@@ -8,7 +9,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello_world():  # put application's code here
-    return 'Hello Healthchain'
+    return 'Hello Healthchain!'
 
 
 @app.route('/encode-patient-data', methods=["POST"])
@@ -24,8 +25,10 @@ def encode_data():
     """
     create_keys_if_empty()
 
-
-    return request.get_json()
+    # TODO: validate formatting using FHIR validators
+    fhir_data = request.get_json()
+    fhir_metadata, phi = clean_fhir_data(fhir_data)
+    return "OK", 201, {}
 
 
 if __name__ == '__main__':
