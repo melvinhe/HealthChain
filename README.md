@@ -12,6 +12,8 @@ HealthChain revolutionizes patient privacy by offering a groundbreaking solution
 
 The project was made possible thanks to the Gear platform. Powered by Rust, Gear enabled our team to build a safe, production quality smart contract within the limited timespan. Despite most of our members never having worked with Web3 technology prior to the hackathon, Gear's intuitive architecture combined with the beginner friendly Web3 content on EasyA meant all of us were well prepared to advance Web3 within a few hours.
 
+Furthermore, the gtest library made unit testing a breeze, helping our team practice test driven development, as we were able to individually test all possible actions on the smart contract locally.
+
 **Upload and Encryption:** Users can upload their EHR data in the form of a JSON object. The app performs local encryption on the data before it leaves the user's computer. This encryption step ensures that only authorized parties can access and decipher the sensitive health information.
 
 **Secure Data Vault:** The encrypted EHR data is securely transmitted to our dedicated data vault. The vault is designed to store and protect the data with robust security measures, including encryption at rest and access controls.
