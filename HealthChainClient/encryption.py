@@ -1,3 +1,5 @@
+import os
+
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives.asymmetric import padding
 # from cryptography.hazmat.primitives import serialization
@@ -7,7 +9,15 @@ from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives import serialization
 
 
-def create_private_key():
+def create_keys_if_empty():
+    if not (os.path.exists('key.pem') and os.path.exists('key.pub')):
+        create_private_key()
+
+    if not (os.path.exists('verifier.pem') and os.path.exists('verifier.pub')):
+        create_private_key('verifier')
+
+
+def create_private_key(location='key'):
     """
     Writes private key to disk, returns public key string
     """
@@ -21,7 +31,7 @@ def create_private_key():
         encryption_algorithm=serialization.NoEncryption(),
     )
 
-    with open('key.pem', mode='wb') as f:
+    with open(f'{location}.pem', mode='wb') as f:
         f.write(pem)
 
     public_key = private_key.public_key()
@@ -30,9 +40,10 @@ def create_private_key():
         format=serialization.PublicFormat.SubjectPublicKeyInfo,
     )
 
-    with open('key.pub', mode='wb') as f:
+    with open(f'{location}.pub', mode='wb') as f:
         f.write(pub)
-    print("done")
+
+    print(f"Created private key at {location}.pem and public key at {location}.pub")
 
 
 def load_key(path: str, private=False):
