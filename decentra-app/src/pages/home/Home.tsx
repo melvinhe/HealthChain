@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 
 export function Home(): JSX.Element {
     const [requests, setRequests] = useState([
-      { id: 1, company: "Company A", walletAddress: "0x5EARpNkdPyj1myCfwXyqtF6PtDXexKYWgJxE38G9Kor4sHrd" },
+      { id: 1, company: "United Health", walletAddress: "0x5EARpNkdPyj1myCfwXyqtF6PtDXexKYWgJxE38G9Kor4sHrd" },
+      { id: 2, company: "Sam Bankman-Fried", walletAddress: "0xsAM3ankmm4n5r13d" },
     ]);
 
     const handleAccept = (id: number) => {
@@ -13,8 +14,17 @@ export function Home(): JSX.Element {
 
     const handleReject = (id: number) => {
       // Handle reject action for the request with the given ID
+      setRequests(requests.filter((item) => item.id !== id))
       console.log(`Rejected request with ID: ${id}`);
     };
+
+    const handleAcceptData = (id: number) => {
+      console.log(`Accepted request with ID: ${id}`);
+    }
+
+    const handleRejectData = (id : number) => {
+      console.log(`Rejected request with ID: ${id}`);
+    }
   const [jsonData, setJsonData] = useState<object>({});
   const [isInvalidJSON, setIsInvalidJSON] = useState<boolean>(false);
 
@@ -516,7 +526,59 @@ export function Home(): JSX.Element {
         </div>
       )}
 
-      {showHospital && <div>Welcome to Hospital</div>}
+      {showHospital && (
+          <div
+            key={0}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              border: "1px solid #ccc",
+              padding: "10px",
+              marginBottom: "10px",
+            }}
+          >
+            <div style={{ flex: "1" }}>
+              <h2
+                style={{
+                  fontSize: "1.5rem",
+                  fontWeight: "bold",
+                  color: "black",
+                }}
+              >
+                {JSON.stringify(jsonData)}
+              </h2>
+              <p style={{ color: "#666" }}>0x5EARpNkdPyj1myCfwXyqtF6PtDXexKYWgJxE38G9Kor4sHrd</p>
+            </div>
+            <div>
+              <button
+                type="button"
+                onClick={() => handleAcceptData(0)}
+                style={{
+                  backgroundColor: "green",
+                  color: "white",
+                  padding: "8px 16px",
+                  marginRight: "8px",
+                  cursor: "pointer",
+                }}
+              >
+                Sign
+              </button>
+              <button
+                type="button"
+                onClick={() => handleRejectData(0)}
+                style={{
+                  backgroundColor: "red",
+                  color: "white",
+                  padding: "8px 16px",
+                  cursor: "pointer",
+                }}
+              >
+                Reject
+              </button>
+            </div>
+          </div>
+        
+      )}
     </div>
   );
 }
