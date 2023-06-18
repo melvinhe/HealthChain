@@ -14,7 +14,7 @@ function AccountButton({ address, name, onClick, isActive, block }: Props) {
   const className = clsx(
     buttonStyles.button,
     buttonStyles.medium,
-    isActive ? buttonStyles.primary : buttonStyles.light,
+    isActive ? buttonStyles.primary : buttonStyles.secondary,
     block && buttonStyles.block,
   );
 

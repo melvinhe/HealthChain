@@ -4,13 +4,15 @@
   display: flex;
   align-items: center;
   position: relative;
+  color: black
 }
 
 .balance {
   margin-right: 25px;
   font-size: $fontSizeMedium;
+  color: black
 }
 
 .currency {
-  color: $textColorSecondary;
+  color: black;
 }

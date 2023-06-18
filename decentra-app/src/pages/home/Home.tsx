@@ -48,55 +48,160 @@ export function Home(): JSX.Element {
     postData("http://localhost:3000", JSON.stringify(jsonData));
   };
 
+  const [showPatient, setShowPatient] = useState(false);
+  const [showHome, setShowHome] = useState(true);
+  const [showBuyer, setShowBuyer] = useState(false);
+  const [showHospital, setShowHospital] = useState(false);
+
+  const hideComponent = (componentName: string): void => {
+    switch (componentName) {
+      case "patient":
+        setShowPatient(false);
+        break;
+      case "home":
+        setShowHome(false);
+        break;
+      case "buyer":
+        setShowBuyer(false);
+        break;
+      case "hospital":
+        setShowHospital(false);
+        break;
+      default:
+    }
+  };
+
+  const showComponent = (componentName: string): void => {
+    switch (componentName) {
+      case "patient":
+        setShowPatient(true);
+        hideComponent("home");
+        hideComponent("buyer");
+        hideComponent("hospital");
+        break;
+      case "home":
+        setShowHome(true);
+        hideComponent("buyer");
+        hideComponent("hospital");
+        hideComponent("patient");
+        break;
+      case "buyer":
+        setShowBuyer(true);
+        hideComponent("patient");
+        hideComponent("home");
+        hideComponent("hospital");
+        break;
+      case "hospital":
+        setShowHospital(true);
+        hideComponent("buyer");
+        hideComponent("home");
+        hideComponent("patient");
+        break;
+      default:
+    }
+  };
+
   return (
     <div style={{ display: "flex" }}>
       {/* Sidebar */}
       <div
         style={{
           width: "160px",
-          backgroundColor: "#f2f2f2",
           marginLeft: "20px",
           marginRight: "20px",
           padding: "10px",
           borderRadius: "10px",
           boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+          marginTop: "40px",
+          marginBottom: "0px",
         }}
       >
         <ul style={{ margin: 0, padding: 0 }}>
-          <li>
-            <Link to="/" style={{ color: "black", fontSize: "18px" }}>
+          <li style={{ marginTop: "20px", marginBottom: "40px" }}>
+            <button
+              type="button"
+              onClick={() => {
+                showComponent("home");
+              }}
+              style={{
+                color: "black",
+                fontSize: "18px",
+                border: "none",
+                background: "none",
+                cursor: "pointer",
+                padding: 0,
+                textAlign: "left",
+                width: "100%",
+              }}
+            >
               Home
-            </Link>
+            </button>
           </li>
-          <li>
-            <Link to="/other" style={{ color: "black", fontSize: "18px" }}>
-              Other Page
-            </Link>
+          <li style={{ marginBottom: "40px" }}>
+            <button
+              type="button"
+              onClick={() => {
+                showComponent("patients");
+              }}
+              style={{
+                color: "black",
+                fontSize: "18px",
+                border: "none",
+                background: "none",
+                cursor: "pointer",
+                padding: 0,
+                textAlign: "left",
+                width: "100%",
+              }}
+            >
+              Patient Portal
+            </button>
           </li>
-          <li>
-            <Link to="/page1" style={{ color: "black", fontSize: "18px" }}>
-              Page 1
-            </Link>
+          <li style={{ marginBottom: "40px" }}>
+            <button
+              type="button"
+              onClick={() => {
+                showComponent("buyer");
+              }}
+              style={{
+                color: "black",
+                fontSize: "18px",
+                border: "none",
+                background: "none",
+                cursor: "pointer",
+                padding: 0,
+                textAlign: "left",
+                width: "100%",
+              }}
+            >
+              Researcher Portal
+            </button>
           </li>
-          <li>
-            <Link to="/page2" style={{ color: "black", fontSize: "18px" }}>
-              Page 2
-            </Link>
-          </li>
-          <li>
-            <Link to="/page3" style={{ color: "black", fontSize: "18px" }}>
-              Page 3
-            </Link>
-          </li>
-          <li>
-            <Link to="/page4" style={{ color: "black", fontSize: "18px" }}>
-              Page 4
-            </Link>
+          <li style={{ marginBottom: "40px" }}>
+            <button
+              type="button"
+              onClick={() => {
+                showComponent("Hospital");
+              }}
+              style={{
+                color: "black",
+                fontSize: "18px",
+                border: "none",
+                background: "none",
+                cursor: "pointer",
+                padding: 0,
+                textAlign: "left",
+                width: "100%",
+              }}
+            >
+              Hospital Portal
+            </button>
           </li>
           {/* Add more sidebar links here */}
         </ul>
       </div>
       {/* Main content */}
+      {showPatient && <div> </div>}
       <div style={{ flex: 1, marginLeft: "20px" }}>
         <h3 style={{ color: "black" }}>
           Put Your Health Data Back in Your Control: Embrace HealthChain, Securing Your EHR with Blockchain.
