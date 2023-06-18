@@ -2,7 +2,7 @@ from flask import Flask
 from flask import request
 
 from data_processing import clean_fhir_data
-from encryption import create_keys_if_empty
+from encryption import create_keys_if_empty, chain_data_verifier_transaction
 
 app = Flask(__name__)
 
@@ -28,6 +28,9 @@ def encode_data():
     # TODO: validate formatting using FHIR validators
     fhir_data = request.get_json()
     fhir_metadata, phi = clean_fhir_data(fhir_data)
+
+    signature_patient, signature_verifier, public_key_verified = chain_data_verifier_transaction(fhir_data,
+                                                                                                 fhir_metadata)
 
     return "OK", 201, {}
 

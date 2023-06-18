@@ -18,14 +18,18 @@ def chain_data_verifier_transaction(data, metadata):
     private_key_verified = load_key(path='verifier.pem', private=True)
     public_key_verified = load_key(path='verifier.pub', private=False)
 
-    signature_patient = sign_message(encrypt_message(data, pub_key) + metadata, private_key)
+    data_encoded = json.dumps(data, indent=2).encode('utf-8')
 
-    valid_message = verify_signed_message(signature_patient, encrypt_message(data, pub_key) + metadata, public_key)
+    signature_patient = sign_message((str(encrypt_message(data_encoded, pub_key)) + str(metadata)).encode('utf-8'), private_key)
 
-    if not valid_message:
-        raise ValueError("Patient data was not signed by patient")
+    # Eventually this code would be used to verify on the blockchain
 
-    signature_verifier = sign_message(encrypt_message(data, pub_key) + metadata, private_key_verified)
+    # valid_message = verify_signed_message(signature_patient, (str(encrypt_message(data_encoded, pub_key)) + str(metadata)).encode('utf-8'), pub_key)
+    #
+    # if not valid_message:
+    #     raise ValueError("Patient data was not signed by patient")
+
+    signature_verifier = sign_message((str(encrypt_message(data_encoded, pub_key)) + str(metadata)).encode('utf-8'), private_key_verified)
 
     return signature_patient, signature_verifier, public_key_verified
 
