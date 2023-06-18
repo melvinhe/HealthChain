@@ -259,32 +259,51 @@ export function Home(): JSX.Element {
                 </pre>
               </div>
             )}
-            {requests.map((request) => (
-              <div
-                key={request.id}
-                className="flex items-center border p-4 my-4"
-              >
-                <div className="flex-grow">
-                  <h2 className="text-xl font-semibold">{request.company}</h2>
-                  <p className="text-gray-600">{request.walletAddress}</p>
-                </div>
-                <div className="flex justify-end">
-                  <button
-                    onClick={() => handleAccept(request.id)}
-                    className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 mr-2"
-                  >
-                    Accept
-                  </button>
-                  <button
-                    onClick={() => handleReject(request.id)}
-                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2"
-                  >
-                    Reject
-                  </button>
-                </div>
-              </div>
-            ))}
           </div>
+          {requests.map((request) => (
+            <div
+              key={request.id}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                border: "1px solid #ccc",
+                padding: "10px",
+                marginBottom: "10px",
+              }}
+            >
+              <div style={{ flex: "1" }}>
+                <h2 style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
+                  {request.company}
+                </h2>
+                <p style={{ color: "#666" }}>{request.walletAddress}</p>
+              </div>
+              <div>
+                <button
+                  onClick={() => handleAccept(request.id)}
+                  style={{
+                    backgroundColor: "green",
+                    color: "white",
+                    padding: "8px 16px",
+                    marginRight: "8px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Accept
+                </button>
+                <button
+                  onClick={() => handleReject(request.id)}
+                  style={{
+                    backgroundColor: "red",
+                    color: "white",
+                    padding: "8px 16px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Reject
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
