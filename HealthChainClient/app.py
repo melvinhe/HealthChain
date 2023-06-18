@@ -1,5 +1,7 @@
+import json
 import uuid
 
+from cryptography.hazmat.primitives import serialization
 from flask import Flask
 from flask import request
 
@@ -33,11 +35,44 @@ def encode_data():
 
     signature_patient, signature_verifier, public_key_verified = chain_data_verifier_transaction(fhir_data,
                                                                                                  fhir_metadata)
+
     t1_id = str(uuid.uuid4())
     t2_id = str(uuid.uuid4())
+
+    with open(f'records/{t1_id}.json', "w") as f:
+        json.dump({"patient_signature": str(signature_patient)}, f)
+
+    with open(f'records/{t2_id}.json', "w") as f:
+        json.dump({"verifier_signature": str(signature_verifier), "verifier_public_key": str(public_key_verified)}, f)
+
     payload = {"transaction 1": t1_id, "transaction 2": t2_id}
 
     return str(payload), 201, {}
+
+
+@app.route('/pub-b', methods=["GET"])
+def get_pub_b_customer():
+    create_keys_if_empty()
+
+    with open('business.pub', 'rb') as file:
+        key = serialization.load_pem_public_key(
+            file.read()
+        )
+
+    return str(key.public_bytes(encoding=serialization.Encoding.PEM,
+                                format=serialization.PublicFormat.SubjectPublicKeyInfo))
+
+@app.route('/pub-b-return', methods=["GET"])
+def get_pub_b_customer():
+    create_keys_if_empty()
+
+    with open('business.pub', 'rb') as file:
+        key = serialization.load_pem_public_key(
+            file.read()
+        )
+
+    return str(key.public_bytes(encoding=serialization.Encoding.PEM,
+                                format=serialization.PublicFormat.SubjectPublicKeyInfo))
 
 
 if __name__ == '__main__':

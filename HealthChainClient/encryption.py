@@ -41,6 +41,9 @@ def create_keys_if_empty():
     if not (os.path.exists('verifier.pem') and os.path.exists('verifier.pub')):
         create_private_key('verifier')
 
+    if not (os.path.exists('business.pem') and os.path.exists('business.pub')):
+        create_private_key('business')
+
 
 def create_private_key(location='key'):
     """
