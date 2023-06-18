@@ -63,17 +63,27 @@ def get_pub_b_customer():
                                 format=serialization.PublicFormat.SubjectPublicKeyInfo))
 
 @app.route('/pub-b-return', methods=["GET"])
-def get_pub_b_customer():
-    create_keys_if_empty()
+def get_pub_b_():
+    return "", 501, {}
 
-    with open('business.pub', 'rb') as file:
-        key = serialization.load_pem_public_key(
-            file.read()
-        )
+@app.route('/get-valid-patients', methods=["GET"])
+def get_valid_patients():
+    pass
 
-    return str(key.public_bytes(encoding=serialization.Encoding.PEM,
-                                format=serialization.PublicFormat.SubjectPublicKeyInfo))
+@app.route('/decode-patient-data', methods=["POST"])
+def decode_data():
+    """
+    Given POINTEr TO PubA(Data) + metadata we execute the followin transactions
 
+    1. Return PubB(PrivA) (logged as transaction on change)
+    2. Use PrivB(1) --> PrivA
+    3. Use PrivA(PubA(Data)) + metadata to get Data + metadata
+    4. Return 1 (uuid logged on chain) and 3 (location calculations only visible to B)
+    :return:
+    """
+    with open("patient_1.json") as f:
+        json_result = json.load(f)
+    return json_result, 201, {}
 
 if __name__ == '__main__':
     app.run()
