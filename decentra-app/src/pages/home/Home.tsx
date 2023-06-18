@@ -1,5 +1,7 @@
-import { useState, ChangeEvent } from "react";
-import { Link } from "react-router-dom";
+import { useState, ChangeEvent, useEffect } from "react";
+import { GearApi, IMessageSendOptions, getProgramMetadata } from '@gear-js/api';
+import fs from 'fs';
+import { u128 } from "@polkadot/types";
 
 export function Home(): JSX.Element {
   type SignedJson = {
@@ -11,45 +13,61 @@ export function Home(): JSX.Element {
   type Requests = {
     id: number,
     company: string,
-    walletAddress: string
+    walletAddress: string,
+    value: u128
   }
-    const [requests, setRequests] = useState<Requests[]>([]);
-    const [signedPatients, setSignedPatients] = useState<SignedJson[]>([]);
-    const [jsonData, setJsonData] = useState<object[]>([{}]);
-    const [isInvalidJSON, setIsInvalidJSON] = useState<boolean>(false);
+  const [requests, setRequests] = useState<Requests[]>([]);
+  const [signedPatients, setSignedPatients] = useState<SignedJson[]>([]);
+  const [jsonData, setJsonData] = useState<object[]>([{}]);
+  const [isInvalidJSON, setIsInvalidJSON] = useState<boolean>(false);
+  const [gearApi, setGearApi] = useState<GearApi | null>(null);
 
-    const handleAccept = (id: number) => {
-      // Handle accept action for the request with the given ID
-      setRequests(requests.filter((item) => item.id !== id))
-      console.log(`Accepted request with ID: ${id}`);
-    };
+  useEffect(() => {
+    GearApi.create().then(setGearApi);
+  }, [])
 
-    const handleReject = (id: number) => {
-      // Handle reject action for the request with the given ID
-      setRequests(requests.filter((item) => item.id !== id))
-      console.log(`Rejected request with ID: ${id}`);
-    };
-
-    const handleAcceptData = (hash_json: string) => {
-      signedPatients.push({id: 0, json_string: hash_json, address: "0x5EARpNkdPyj1myCfwXyqtF6PtDXexKYWgJxE38G9Kor4sHrd"} as SignedJson)
-      setJsonData(jsonData.filter((item) => JSON.stringify(item) !== hash_json));
-      console.log(`Accepted request with JSON: ${hash_json}`);
+  const handleAccept = (id: number) => {
+    // Handle accept action for the request with the given ID
+    setRequests(requests.filter((item) => item.id !== id))
+    const message: IMessageSendOptions = {
+      destination: "0xbb26ebb3ff72ebd67c01b3086e9cd197dd52eb2c718318ca292682497f6fb9c4",
+      payload: { "Sell": { } },
+      value: requests[0].value,
+      gasLimit: 100_000_000_000
     }
 
-    const buyInfo = (id: number) => {
-      requests.push({ id: 1, company: "United Health", walletAddress: "0x5EARpNkdPyj1myCfwXyqtF6PtDXexKYWgJxE38G9Kor4sHrd" } as Requests)
-      requests.push({ id: 2, company: "Sam Bankman-Fried", walletAddress: "0xsAM3ankmm4n5r13d" } as Requests)
-      setSignedPatients(signedPatients.filter((item) => item.id !== id))
-    }
+    const metadataHex = fs.readFileSync('app.meta.txt', 'utf-8');
+    const metadata = getProgramMetadata('0x' + metadataHex);
+    gearApi?.message.send(message, metadata)
+    console.log(`Accepted request with ID: ${id}`);
+  };
 
-    const rejectInfo = (id: number) => {
-      setSignedPatients(signedPatients.filter((item) => item.id !== id))
-    }
+  const handleReject = (id: number) => {
+    // Handle reject action for the request with the given ID
+    setRequests(requests.filter((item) => item.id !== id))
+    console.log(`Rejected request with ID: ${id}`);
+  };
 
-    const handleRejectData = (hash_json: string) => {
-      setJsonData(jsonData.filter((item) => JSON.stringify(item) !== hash_json));
-      console.log(`Rejected request with JSON: ${hash_json}`);
-    }
+  const handleAcceptData = (hash_json: string) => {
+    signedPatients.push({ id: 0, json_string: hash_json, address: "0x5EARpNkdPyj1myCfwXyqtF6PtDXexKYWgJxE38G9Kor4sHrd" } as SignedJson)
+    setJsonData(jsonData.filter((item) => JSON.stringify(item) !== hash_json));
+    console.log(`Accepted request with JSON: ${hash_json}`);
+  }
+
+  const buyInfo = (id: number) => {
+    requests.push({ id: 1, company: "United Health", walletAddress: "0x5EARpNkdPyj1myCfwXyqtF6PtDXexKYWgJxE38G9Kor4sHrd" } as Requests)
+    requests.push({ id: 2, company: "Sam Bankman-Fried", walletAddress: "0xsAM3ankmm4n5r13d" } as Requests)
+    setSignedPatients(signedPatients.filter((item) => item.id !== id))
+  }
+
+  const rejectInfo = (id: number) => {
+    setSignedPatients(signedPatients.filter((item) => item.id !== id))
+  }
+
+  const handleRejectData = (hash_json: string) => {
+    setJsonData(jsonData.filter((item) => JSON.stringify(item) !== hash_json));
+    console.log(`Rejected request with JSON: ${hash_json}`);
+  }
 
 
   const postData = async (url_endpoint: string, data: string) => {
@@ -153,92 +171,92 @@ export function Home(): JSX.Element {
     <div style={{ display: "flex" }}>
       {/* Sidebar */}
       <div
-      style={{
-        width: "160px",
-        marginRight: "20px",
-        padding: "10px",
-        borderRadius: "10px",
-        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-        marginTop: "40px",
-        marginBottom: "0px",
-        height: "calc(100vh - 40px)",
-      }}
-    >
-      <ul style={{ margin: 0, padding: 0 }}>
-        <li style={{ marginTop: "20px", marginBottom: "40px" }}>
-          <button
-            type="button"
-            onClick={() => showComponent("home")}
-            style={{
-              color: "black",
-              fontSize: "18px",
-              border: "none",
-              background: "none",
-              cursor: "pointer",
-              padding: 0,
-              textAlign: "left",
-              width: "100%",
-            }}
-          >
-            Home
-          </button>
-        </li>
-        <li style={{ marginBottom: "40px" }}>
-          <button
-            type="button"
-            onClick={() => showComponent("patient")}
-            style={{
-              color: "black",
-              fontSize: "18px",
-              border: "none",
-              background: "none",
-              cursor: "pointer",
-              padding: 0,
-              textAlign: "left",
-              width: "100%",
-            }}
-          >
-            Patient Portal
-          </button>
-        </li>
-        <li style={{ marginBottom: "40px" }}>
-          <button
-            type="button"
-            onClick={() => showComponent("buyer")}
-            style={{
-              color: "black",
-              fontSize: "18px",
-              border: "none",
-              background: "none",
-              cursor: "pointer",
-              padding: 0,
-              textAlign: "left",
-              width: "100%",
-            }}
-          >
-            Researcher Portal
-          </button>
-        </li>
-        <li style={{ marginBottom: "40px" }}>
-          <button
-            type="button"
-            onClick={() => showComponent("hospital")}
-            style={{
-              color: "black",
-              fontSize: "18px",
-              border: "none",
-              background: "none",
-              cursor: "pointer",
-              padding: 0,
-              textAlign: "left",
-              width: "100%",
-            }}
-          >
-            Hospital Portal
-          </button>
-        </li>
-      </ul>
-    </div>
+        style={{
+          width: "160px",
+          marginRight: "20px",
+          padding: "10px",
+          borderRadius: "10px",
+          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+          marginTop: "40px",
+          marginBottom: "0px",
+          height: "calc(100vh - 40px)",
+        }}
+      >
+        <ul style={{ margin: 0, padding: 0 }}>
+          <li style={{ marginTop: "20px", marginBottom: "40px" }}>
+            <button
+              type="button"
+              onClick={() => showComponent("home")}
+              style={{
+                color: "black",
+                fontSize: "18px",
+                border: "none",
+                background: "none",
+                cursor: "pointer",
+                padding: 0,
+                textAlign: "left",
+                width: "100%",
+              }}
+            >
+              Home
+            </button>
+          </li>
+          <li style={{ marginBottom: "40px" }}>
+            <button
+              type="button"
+              onClick={() => showComponent("patient")}
+              style={{
+                color: "black",
+                fontSize: "18px",
+                border: "none",
+                background: "none",
+                cursor: "pointer",
+                padding: 0,
+                textAlign: "left",
+                width: "100%",
+              }}
+            >
+              Patient Portal
+            </button>
+          </li>
+          <li style={{ marginBottom: "40px" }}>
+            <button
+              type="button"
+              onClick={() => showComponent("buyer")}
+              style={{
+                color: "black",
+                fontSize: "18px",
+                border: "none",
+                background: "none",
+                cursor: "pointer",
+                padding: 0,
+                textAlign: "left",
+                width: "100%",
+              }}
+            >
+              Researcher Portal
+            </button>
+          </li>
+          <li style={{ marginBottom: "40px" }}>
+            <button
+              type="button"
+              onClick={() => showComponent("hospital")}
+              style={{
+                color: "black",
+                fontSize: "18px",
+                border: "none",
+                background: "none",
+                cursor: "pointer",
+                padding: 0,
+                textAlign: "left",
+                width: "100%",
+              }}
+            >
+              Hospital Portal
+            </button>
+          </li>
+        </ul>
+      </div>
       {/* Main content */}
 
       {showPatient && (
@@ -544,11 +562,11 @@ export function Home(): JSX.Element {
             <input type="file" style={{ width: "150px" }} />
           </div>
           <div style={{ textAlign: "center", marginTop: "20px" }}>
-        <button type="button" onClick={() => setShowValidJsons(true)}>
-          Submit
-        </button>
-      </div>
-      {showValidJsons && signedPatients.map((patient) => (
+            <button type="button" onClick={() => setShowValidJsons(true)}>
+              Submit
+            </button>
+          </div>
+          {showValidJsons && signedPatients.map((patient) => (
             <div
               key={patient.id}
               style={{
@@ -604,60 +622,60 @@ export function Home(): JSX.Element {
       )}
 
       {showHospital && (jsonData.map((single_data) => (
-          <div
-            key={0}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              border: "1px solid #ccc",
-              padding: "10px",
-              marginBottom: "10px",
-            }}
-          >
-            <div style={{ flex: "1" }}>
-              <h2
-                style={{
-                  fontSize: "1.5rem",
-                  fontWeight: "bold",
-                  color: "black",
-                }}
-              >
+        <div
+          key={0}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            border: "1px solid #ccc",
+            padding: "10px",
+            marginBottom: "10px",
+          }}
+        >
+          <div style={{ flex: "1" }}>
+            <h2
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: "bold",
+                color: "black",
+              }}
+            >
               Patient: 0x5EARpNkdPyj1myCfwXyqtF6PtDXexKYWgJxE38G9Kor4sHrd
-              </h2>
-              <p style={{ color: "#666" }}>
+            </h2>
+            <p style={{ color: "#666" }}>
               {JSON.stringify(single_data)}
-              </p>
+            </p>
 
-            </div>
-            <div>
-              <button
-                type="button"
-                onClick={() => handleAcceptData(JSON.stringify(single_data))}
-                style={{
-                  backgroundColor: "green",
-                  color: "white",
-                  padding: "8px 16px",
-                  marginRight: "8px",
-                  cursor: "pointer",
-                }}
-              >
-                Sign
-              </button>
-              <button
-                type="button"
-                onClick={() => handleRejectData(JSON.stringify(single_data))}
-                style={{
-                  backgroundColor: "red",
-                  color: "white",
-                  padding: "8px 16px",
-                  cursor: "pointer",
-                }}
-              >
-                Reject
-              </button>
-            </div>
-          </div>))
-        
+          </div>
+          <div>
+            <button
+              type="button"
+              onClick={() => handleAcceptData(JSON.stringify(single_data))}
+              style={{
+                backgroundColor: "green",
+                color: "white",
+                padding: "8px 16px",
+                marginRight: "8px",
+                cursor: "pointer",
+              }}
+            >
+              Sign
+            </button>
+            <button
+              type="button"
+              onClick={() => handleRejectData(JSON.stringify(single_data))}
+              style={{
+                backgroundColor: "red",
+                color: "white",
+                padding: "8px 16px",
+                cursor: "pointer",
+              }}
+            >
+              Reject
+            </button>
+          </div>
+        </div>))
+
       )}
     </div>
   );
