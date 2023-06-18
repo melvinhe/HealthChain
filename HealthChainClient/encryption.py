@@ -1,13 +1,48 @@
-from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.primitives.asymmetric import padding
-# from cryptography.hazmat.primitives import serialization
+import os
+import json
+
 from cryptography.hazmat.primitives import hashes
 
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives import serialization
 
 
-def create_private_key():
+def chain_data_verifier_transaction(data, metadata):
+    """
+    a. create signature with private_keyA(pubkey(data)+metadata)) + pubkeyA(data)+metadata) pubkey(a) return privh(pubkey(data)+metadata))
+    :return:
+    """
+    private_key = load_key(path='key.pem', private=True)
+    pub_key = load_key(path='key.pub', private=False)
+
+    private_key_verified = load_key(path='verifier.pem', private=True)
+    public_key_verified = load_key(path='verifier.pub', private=False)
+
+    data_encoded = json.dumps(data, indent=2).encode('utf-8')
+
+    signature_patient = sign_message((str(encrypt_message(data_encoded, pub_key)) + str(metadata)).encode('utf-8'), private_key)
+
+    # Eventually this code would be used to verify on the blockchain
+
+    # valid_message = verify_signed_message(signature_patient, (str(encrypt_message(data_encoded, pub_key)) + str(metadata)).encode('utf-8'), pub_key)
+    #
+    # if not valid_message:
+    #     raise ValueError("Patient data was not signed by patient")
+
+    signature_verifier = sign_message((str(encrypt_message(data_encoded, pub_key)) + str(metadata)).encode('utf-8'), private_key_verified)
+
+    return signature_patient, signature_verifier, public_key_verified
+
+
+def create_keys_if_empty():
+    if not (os.path.exists('key.pem') and os.path.exists('key.pub')):
+        create_private_key()
+
+    if not (os.path.exists('verifier.pem') and os.path.exists('verifier.pub')):
+        create_private_key('verifier')
+
+
+def create_private_key(location='key'):
     """
     Writes private key to disk, returns public key string
     """
@@ -21,7 +56,7 @@ def create_private_key():
         encryption_algorithm=serialization.NoEncryption(),
     )
 
-    with open('key.pem', mode='wb') as f:
+    with open(f'{location}.pem', mode='wb') as f:
         f.write(pem)
 
     public_key = private_key.public_key()
@@ -30,9 +65,10 @@ def create_private_key():
         format=serialization.PublicFormat.SubjectPublicKeyInfo,
     )
 
-    with open('key.pub', mode='wb') as f:
+    with open(f'{location}.pub', mode='wb') as f:
         f.write(pub)
-    print("done")
+
+    print(f"Created private key at {location}.pem and public key at {location}.pub")
 
 
 def load_key(path: str, private=False):
@@ -78,63 +114,52 @@ def verify_signed_message(signature, message, public_key):
         return False
 
 
-def run():
-    # Generate a private/public key pair
-    private_key = rsa.generate_private_key(
-        public_exponent=65537,
-        key_size=2048
-    )
-    public_key = private_key.public_key()
+def encrypt_message(message, public_key):
+    encrypted_payload = {}
 
-    # Serialize the private/public keys
-    private_pem = private_key.private_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PrivateFormat.PKCS8,
-        encryption_algorithm=serialization.NoEncryption()
-    )
-    public_pem = public_key.public_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PublicFormat.SubjectPublicKeyInfo
-    )
-
-    # Encrypt the message with the public key
-    message = b"Hello World"
-    encrypted_message = public_key.encrypt(
-        message,
-        padding.OAEP(
-            mgf=padding.MGF1(algorithm=hashes.SHA256()),
-            algorithm=hashes.SHA256(),
-            label=None
+    for i in range(0, len(message), 100):
+        encrypted_message_fraction = public_key.encrypt(
+            message[i:i + 100],
+            padding.OAEP(
+                mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                algorithm=hashes.SHA256(),
+                label=None
+            )
         )
-    )
+        encrypted_payload[i] = encrypted_message_fraction
+    return encrypted_payload
 
+
+def decrypt_message(encrypted_message: dict, private_key):
     # Decrypt the message with the private key
-    decrypted_message = private_key.decrypt(
-        encrypted_message,
-        padding.OAEP(
-            mgf=padding.MGF1(algorithm=hashes.SHA256()),
-            algorithm=hashes.SHA256(),
-            label=None
+    keys = sorted([x for x in encrypted_message])
+    decrypted_fractions = []
+    for key in keys:
+        decrypted_fraction = private_key.decrypt(
+            encrypted_message[key],
+            padding.OAEP(
+                mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                algorithm=hashes.SHA256(),
+                label=None
+            )
         )
-    )
-
-    print("Original Message: ", message)
-    print("Encrypted Message: ", encrypted_message)
-    print("Decrypted Message: ", decrypted_message)
-
-    signature = private_key.sign(
-        message,
-        padding.PSS(
-            mgf=padding.MGF1(hashes.SHA256()),
-            salt_length=padding.PSS.MAX_LENGTH,
-        ),
-        hashes.SHA256(),
-    )
+        decrypted_fractions.append(decrypted_fraction)
+    return b''.join(decrypted_fractions)
 
 
 if __name__ == '__main__':
-    # create_private_key()
     private_key = load_key(path='key.pem', private=True)
     public_key = load_key(path='key.pub')
-    signature = sign_message(b'Test', private_key)
-    message_status = verify_signed_message(signature, b'Test', public_key)
+
+    with open('../patient_data_single.json') as f:
+        message = json.dumps(json.load(f), indent=2).encode('utf-8')
+
+    encrypted_message = encrypt_message(message, public_key)
+    decrypted_message = decrypt_message(encrypted_message, private_key)
+    print(f"Original message {message} was encrypted and decrypted to {message}")
+    assert message == decrypted_message, "Decrypted message didn't match original"
+
+    document = message
+    signature = sign_message(document, private_key)
+    message_status = verify_signed_message(signature, document, public_key)
+    print(f"Signature for {document} is determined to be {'valid' if message_status else 'invalid'}")
