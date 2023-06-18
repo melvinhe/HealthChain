@@ -25,10 +25,11 @@ Furthermore, the gtest library made unit testing a breeze, helping our team prac
 The HealthChain app aims to empower individuals by giving them control over their health data while facilitating research by providing researchers with a privacy-preserving platform for patient data discovery. 
 
 ## Installation
-
+The repo contains two projects, each with their own installation process
+### decentra-app
 To get started, make sure you have [Node.js](https://nodejs.org) installed on your computer. The app is built using React, so you'll need npm (Node Package Manager) as well. 
 
-1. Clone this repository to your local machine.
+1. Clone this repository to your local machine.\
 
 2. Open a terminal or command prompt and navigate to the project's `decentra-app` directory.
 
@@ -36,19 +37,36 @@ To get started, make sure you have [Node.js](https://nodejs.org) installed on yo
 
 `npm install`
 
+### HealthChainClient
+Make sure you have python installed on your computer.
+
+1. Clone this repository to your local machine.
+
+2. Open a terminal or command prompt and navigate to the project's `HealthChainCLient` directory.
+
+3. Run the following command to install the necessary dependencies:
+
+`pip install -r requirements.txt`
+
 ## Running the App
 
-Once you have completed the installation steps, you can now run the React app locally.
+Once you have completed the installation steps, you can now run the app locally.
 
-1. In the terminal or command prompt, navigate to the project's root directory if you haven't done so already.
+1. In the terminal or command prompt, navigate to `decentra-app` root directory
 
-2. Use the following command to start the development server:
+2. Use the following command to start front-end server:
 
 `npm start`
 
 3. After running the command, the app should open automatically in your default web browser. If it doesn't, you can access it by visiting [http://localhost:3000](http://localhost:3000) in your browser.
 
-4. You should now see the app running and be able to interact with it.
+4. Change directories to `HealthChainClient`
+
+5. Use the following command to start the back-end server:
+
+`python app.py`
+
+6. Start Gear Node with the command `./gear`. The setup instructions are [here](https://wiki.gear-tech.io/docs/node/setting-up)
 
 ## Building for Production
 
