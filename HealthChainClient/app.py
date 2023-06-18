@@ -62,7 +62,7 @@ def get_pub_b_customer():
     return str(key.public_bytes(encoding=serialization.Encoding.PEM,
                                 format=serialization.PublicFormat.SubjectPublicKeyInfo))
 
-@app.route('/pub-b', methods=["GET"])
+@app.route('/pub-b-return', methods=["GET"])
 def get_pub_b_customer():
     create_keys_if_empty()
 
