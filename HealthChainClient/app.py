@@ -62,13 +62,16 @@ def get_pub_b_customer():
     return str(key.public_bytes(encoding=serialization.Encoding.PEM,
                                 format=serialization.PublicFormat.SubjectPublicKeyInfo))
 
+
 @app.route('/pub-b-return', methods=["GET"])
 def get_pub_b_():
     return "", 501, {}
 
+
 @app.route('/get-valid-patients', methods=["GET"])
 def get_valid_patients():
     pass
+
 
 @app.route('/decode-patient-data', methods=["POST"])
 def decode_data():
@@ -81,9 +84,10 @@ def decode_data():
     4. Return 1 (uuid logged on chain) and 3 (location calculations only visible to B)
     :return:
     """
-    with open("patient_1.json") as f:
+    with open("../patient_1.json") as f:
         json_result = json.load(f)
     return json_result, 201, {}
+
 
 if __name__ == '__main__':
     app.run()
