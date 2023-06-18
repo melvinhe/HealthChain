@@ -158,7 +158,7 @@ export function Home(): JSX.Element {
 
       reader.readAsText(file);
     }
-    postData("http://localhost:3000", JSON.stringify(jsonData));
+    postData("http://localhost:5000/encode-patient-data", JSON.stringify(jsonData));
   };
 
   const [showPatient, setShowPatient] = useState(false);

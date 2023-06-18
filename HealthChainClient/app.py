@@ -1,23 +1,24 @@
 import json
 import uuid
+import os
 
 from cryptography.hazmat.primitives import serialization
-from flask import Flask
-from flask import request
-
-from HealthChainClient.node_operations import get_all_nodes, parse_node
 from data_processing import clean_fhir_data
-from encryption import create_keys_if_empty, chain_data_verifier_transaction
+from encryption import chain_data_verifier_transaction, create_keys_if_empty
+from flask import Flask, request
+from flask_cors import CORS, cross_origin
+from node_operations import get_all_nodes, parse_node
 
 app = Flask(__name__)
+cors = CORS(app)
 
-
-@app.route('/')
+@app.route("/")
 def hello_world():  # put application's code here
-    return 'Hello Healthchain!'
+    return "Hello Healthchain!"
 
 
-@app.route('/encode-patient-data', methods=["POST"])
+@app.route("/encode-patient-data", methods=["POST"])
+@cross_origin()
 def encode_data():
     """
     1. If not wallet private key, create private key
@@ -32,44 +33,57 @@ def encode_data():
 
     # TODO: validate formatting using FHIR validators
     fhir_data = request.get_json()
-    fhir_metadata, phi = clean_fhir_data(fhir_data)
+    fhir_data = json.loads(fhir_data) if type(fhir_data) is str else fhir_data
+    fhir_metadata, phi = clean_fhir_data(fhir_data[0])
 
-    signature_patient, signature_verifier, public_key_verified = chain_data_verifier_transaction(fhir_data,
-                                                                                                 fhir_metadata)
+    (
+        signature_patient,
+        signature_verifier,
+        public_key_verified,
+    ) = chain_data_verifier_transaction(fhir_data, fhir_metadata)
 
     t1_id = str(uuid.uuid4())
     t2_id = str(uuid.uuid4())
 
-    with open(f'records/{t1_id}.json', "w") as f:
+    print(os.getcwd())
+    with open(f"./records/{t1_id}.json", "w+") as f:
         json.dump({"patient_signature": str(signature_patient)}, f)
 
-    with open(f'records/{t2_id}.json', "w") as f:
-        json.dump({"verifier_signature": str(signature_verifier), "verifier_public_key": str(public_key_verified)}, f)
+    with open(f"./records/{t2_id}.json", "w+") as f:
+        json.dump(
+            {
+                "verifier_signature": str(signature_verifier),
+                "verifier_public_key": str(public_key_verified),
+            },
+            f,
+        )
 
     payload = {"transaction 1": t1_id, "transaction 2": t2_id}
 
     return str(payload), 201, {}
 
 
-@app.route('/pub-b', methods=["GET"])
+@app.route("/pub-b", methods=["GET"])
 def get_pub_b_customer():
     create_keys_if_empty()
 
-    with open('business.pub', 'rb') as file:
-        key = serialization.load_pem_public_key(
-            file.read()
+    with open("business.pub", "rb") as file:
+        key = serialization.load_pem_public_key(file.read())
+
+    return str(
+        key.public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo,
         )
-
-    return str(key.public_bytes(encoding=serialization.Encoding.PEM,
-                                format=serialization.PublicFormat.SubjectPublicKeyInfo))
+    )
 
 
-@app.route('/pub-b-return', methods=["GET"])
+@app.route("/pub-b-return", methods=["GET"])
 def get_pub_b_():
     return "", 501, {}
 
 
-@app.route('/get-valid-patients', methods=["GET"])
+@app.route("/get-valid-patients", methods=["GET"])
 def get_valid_patients():
     """
     Given criteria of patient_diseases, search and get the number of patients from the blockchain who match
@@ -93,9 +107,10 @@ def get_valid_patients():
             if valid_condition in metadata.get("conditions", []):
                 valid_patients.append(node_data)
 
-    return {"num_patients": len(valid_patients)+1}
+    return {"num_patients": len(valid_patients) + 1}
 
-@app.route('/decode-patient-data', methods=["POST"])
+
+@app.route("/decode-patient-data", methods=["POST"])
 def decode_data():
     """
     Given Pointer TO PubA(Data) + metadata we execute the followin transactions
@@ -111,5 +126,5 @@ def decode_data():
     return json_result, 201, {}
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run()
