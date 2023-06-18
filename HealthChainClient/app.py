@@ -113,7 +113,7 @@ def get_valid_patients():
 @app.route("/decode-patient-data", methods=["POST"])
 def decode_data():
     """
-    Given Pointer TO PubA(Data) + metadata we execute the followin transactions
+    Given Pointer TO PubA(Data) + metadata we execute the following transactions
 
     1. Return PubB(PrivA) (logged as transaction on change)
     2. Use PrivB(1) --> PrivA
@@ -122,8 +122,34 @@ def decode_data():
     :return:
     """
     with open("../patient_1.json") as f:
-        json_result = json.load(f)
-    return json_result, 201, {}
+        json_result = json.dumps(json.load(f)).encode('utf-8')
+
+    public_key_patient = load_key("key.pub", private=False)
+    private_key_patient = load_key("key.pem", private=True)
+
+    encrypted_patient_data = encrypt_message(json_result, public_key_patient)
+
+    key_text = private_key_patient.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=serialization.NoEncryption(),
+    )
+
+    public_key_business = load_key("business.pub", private=False)
+    private_key_business = load_key("business.pem", private=True)
+
+    encrypted_primary_key = encrypt_message(key_text, public_key_business)
+
+    recovered_primary_key_patient_text = decrypt_message(encrypted_primary_key, private_key_business)
+
+    recovered_key_patient = serialization.load_pem_private_key(
+        recovered_primary_key_patient_text,
+        password=None,
+    )
+
+    unencrypted_patient_data = decrypt_message(encrypted_patient_data, recovered_key_patient)
+
+    return unencrypted_patient_data, 201, {}
 
 
 if __name__ == "__main__":
