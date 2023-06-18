@@ -2,6 +2,21 @@ import { useState, ChangeEvent } from "react";
 import { Link } from "react-router-dom";
 
 export function Home(): JSX.Element {
+    const [requests, setRequests] = useState([
+      { id: 1, company: "Company A", walletAddress: "0xABC123" },
+      { id: 2, company: "Company B", walletAddress: "0xDEF456" },
+      { id: 3, company: "Company C", walletAddress: "0xGHI789" },
+    ]);
+
+    const handleAccept = (id: number) => {
+      // Handle accept action for the request with the given ID
+      console.log(`Accepted request with ID: ${id}`);
+    };
+
+    const handleReject = (id: number) => {
+      // Handle reject action for the request with the given ID
+      console.log(`Rejected request with ID: ${id}`);
+    };
   const [jsonData, setJsonData] = useState<object>({});
   const [isInvalidJSON, setIsInvalidJSON] = useState<boolean>(false);
 
@@ -201,144 +216,277 @@ export function Home(): JSX.Element {
         </ul>
       </div>
       {/* Main content */}
-      
-      {showPatient && 
-      (<div style={{ flex: 1, marginLeft: "20px" }}>
-        <h3 style={{ color: "black" }}>
-          Put Your Health Data Back in Your Control: Embrace HealthChain, Securing Your EHR with Blockchain.
-        </h3>
-        <div
-          style={{
-            border: "2px dashed black",
-            borderRadius: "10px",
-            padding: "20px",
-            marginTop: "20px",
-            backgroundColor: "#f2f2f2",
-          }}
-        >
-          <div style={{ display: "flex" }}>
-            <p style={{ marginRight: "10px", color: "black" }}>Drag and drop a JSON file here or click to browse:</p>
-            <label htmlFor="file-upload" style={{ cursor: "pointer", color: "black" }}>
-              Choose File
-              <input
-                type="file"
-                accept=".json"
-                onChange={handleFileUpload}
-                style={{ display: "none" }}
-                id="file-upload"
-              />
-            </label>
-          </div>
-          {isInvalidJSON && <p style={{ color: "red" }}>Invalid JSON file</p>}
-          {jsonData && (
-            <div>
-              <h2 style={{color: "black"}}>Uploaded JSON Data:</h2>
-              <pre style={{color: "black"}}>{JSON.stringify(jsonData, null, 2)}</pre>
+
+      {showPatient && (
+        <div style={{ flex: 1, marginLeft: "20px" }}>
+          <h3 style={{ color: "black" }}>
+            Put Your Health Data Back in Your Control: Embrace HealthChain,
+            Securing Your EHR with Blockchain.
+          </h3>
+          <div
+            style={{
+              border: "2px dashed black",
+              borderRadius: "10px",
+              padding: "20px",
+              marginTop: "20px",
+              backgroundColor: "#f2f2f2",
+            }}
+          >
+            <div style={{ display: "flex" }}>
+              <p style={{ marginRight: "10px", color: "black" }}>
+                Drag and drop a JSON file here or click to browse:
+              </p>
+              <label
+                htmlFor="file-upload"
+                style={{ cursor: "pointer", color: "black" }}
+              >
+                Choose File
+                <input
+                  type="file"
+                  accept=".json"
+                  onChange={handleFileUpload}
+                  style={{ display: "none" }}
+                  id="file-upload"
+                />
+              </label>
             </div>
-          )}
+            {isInvalidJSON && <p style={{ color: "red" }}>Invalid JSON file</p>}
+            {jsonData && (
+              <div>
+                <h2 style={{ color: "black" }}>Uploaded JSON Data:</h2>
+                <pre style={{ color: "black" }}>
+                  {JSON.stringify(jsonData, null, 2)}
+                </pre>
+              </div>
+            )}
+            {requests.map((request) => (
+              <div
+                key={request.id}
+                className="flex items-center border p-4 my-4"
+              >
+                <div className="flex-grow">
+                  <h2 className="text-xl font-semibold">{request.company}</h2>
+                  <p className="text-gray-600">{request.walletAddress}</p>
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    onClick={() => handleAccept(request.id)}
+                    className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 mr-2"
+                  >
+                    Accept
+                  </button>
+                  <button
+                    onClick={() => handleReject(request.id)}
+                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2"
+                  >
+                    Reject
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>)}
+      )}
 
       {showHome && (
-        <div style={{ textAlign: "center", backgroundColor: "#E6F2F8", padding: "20px" }}>
+        <div
+          style={{
+            textAlign: "center",
+            backgroundColor: "#E6F2F8",
+            padding: "20px",
+          }}
+        >
           <h1 style={{ color: "#195FBF" }}>Welcome to HealthChain!</h1>
           <p style={{ color: "#333333" }}>
-            HealthChain provides a secure platform for users to upload their electronic health record (EHR) data.
-            By leveraging blockchain technology, the app ensures the privacy and integrity of the data throughout the process.
-            Here&apos;s how it works:
+            HealthChain provides a secure platform for users to upload their
+            electronic health record (EHR) data. By leveraging blockchain
+            technology, the app ensures the privacy and integrity of the data
+            throughout the process. Here&apos;s how it works:
           </p>
           <h3 style={{ color: "#195FBF" }}>Upload and Encryption</h3>
           <p style={{ color: "#333333" }}>
-            Users can upload their EHR data in the form of a JSON object. The app performs local encryption on the data before it leaves the user&apos;s computer.
-            This encryption step ensures that only authorized parties can access and decipher the sensitive health information.
+            Users can upload their EHR data in the form of a JSON object. The
+            app performs local encryption on the data before it leaves the
+            user&apos;s computer. This encryption step ensures that only
+            authorized parties can access and decipher the sensitive health
+            information.
           </p>
           <h3 style={{ color: "#195FBF" }}>Secure Data Vault</h3>
           <p style={{ color: "#333333" }}>
-            The encrypted EHR data is securely transmitted to our dedicated data vault.
-            The vault is designed to store and protect the data with robust security measures, including encryption at rest and access controls.
+            The encrypted EHR data is securely transmitted to our dedicated data
+            vault. The vault is designed to store and protect the data with
+            robust security measures, including encryption at rest and access
+            controls.
           </p>
           <h3 style={{ color: "#195FBF" }}>Metadata Extraction</h3>
           <p style={{ color: "#333333" }}>
-            Once the EHR data is securely stored, the app extracts high-level diagnoses and relevant metadata from the records.
-            This metadata serves as a summary of the patient&apos;s health conditions and medical history.
+            Once the EHR data is securely stored, the app extracts high-level
+            diagnoses and relevant metadata from the records. This metadata
+            serves as a summary of the patient&apos;s health conditions and
+            medical history.
           </p>
           <h3 style={{ color: "#195FBF" }}>HealthChain Integration</h3>
           <p style={{ color: "#333333" }}>
-            The extracted metadata is then added to the HealthChain, a blockchain-based patient database.
-            The HealthChain provides a decentralized and immutable ledger for storing health-related metadata securely.
-            Researchers can utilize this database to query patients based on specific criteria, such as &quot;diabetes and heart failure, not cancer,&quot; to identify eligible individuals for their studies.
+            The extracted metadata is then added to the HealthChain, a
+            blockchain-based patient database. The HealthChain provides a
+            decentralized and immutable ledger for storing health-related
+            metadata securely. Researchers can utilize this database to query
+            patients based on specific criteria, such as &quot;diabetes and
+            heart failure, not cancer,&quot; to identify eligible individuals
+            for their studies.
           </p>
           <p style={{ color: "#333333" }}>
-            The HealthChain app aims to empower individuals by giving them control over their health data while facilitating research by providing researchers with a privacy-preserving platform for patient data discovery.
+            The HealthChain app aims to empower individuals by giving them
+            control over their health data while facilitating research by
+            providing researchers with a privacy-preserving platform for patient
+            data discovery.
           </p>
         </div>
       )}
 
       {showBuyer && (
         <div>
-          <h1 style={{ color: "#195FBF" }}>Build a Cohort of Study Participants</h1>
+          <h1 style={{ color: "#195FBF" }}>
+            Build a Cohort of Study Participants
+          </h1>
           <p style={{ color: "#333333" }}>
-            Inclusion criteria: Enter names of conditions that should be present in participants&apos; medical histories
+            Inclusion criteria: Enter names of conditions that should be present
+            in participants&apos; medical histories
           </p>
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "5px", marginTop: "-10px" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              marginBottom: "5px",
+              marginTop: "-10px",
+            }}
+          >
             <input type="text" />
           </div>
           <p style={{ color: "#333333" }}>
-            Exclusion criteria: Enter names of conditions that should preclude patients from being included in your cohort present in participants&apos; medical histories
+            Exclusion criteria: Enter names of conditions that should preclude
+            patients from being included in your cohort present in
+            participants&apos; medical histories
           </p>
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "5px", marginTop: "-10px" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              marginBottom: "5px",
+              marginTop: "-10px",
+            }}
+          >
             <input type="text" />
           </div>
           <p style={{ color: "#333333" }}>
-            We found X people on HealthChain that meet your eligibility criteria. To submit a request for data, fill out the rest of the form. We will review the information you submit, and if approved, share it with the patients in the cohort defined above.
+            We found X people on HealthChain that meet your eligibility
+            criteria. To submit a request for data, fill out the rest of the
+            form. We will review the information you submit, and if approved,
+            share it with the patients in the cohort defined above.
           </p>
           <p style={{ color: "#333333" }}>
-            Study Title: Enter a brief title that describes what you&apos;re doing (e.g., &quot;screening patients for eligibility for a clinical trial on a lung cancer drug&quot;, &quot;retrospective comparative effectiveness study on diabetes drugs&quot;)
+            Study Title: Enter a brief title that describes what you&apos;re
+            doing (e.g., &quot;screening patients for eligibility for a clinical
+            trial on a lung cancer drug&quot;, &quot;retrospective comparative
+            effectiveness study on diabetes drugs&quot;)
           </p>
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "5px", marginTop: "-10px" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              marginBottom: "5px",
+              marginTop: "-10px",
+            }}
+          >
             <input type="text" />
           </div>
           <p style={{ color: "#333333" }}>
-            Do you require patient contact information? If yes, patients may be less inclined to opt into your research study. However, contact information may be necessary for following up with patients, notifying them about a clinical trial that they&apos;re eligible for, or sharing your research findings. If no, you will receive HRs with contact information redacted.
+            Do you require patient contact information? If yes, patients may be
+            less inclined to opt into your research study. However, contact
+            information may be necessary for following up with patients,
+            notifying them about a clinical trial that they&apos;re eligible
+            for, or sharing your research findings. If no, you will receive HRs
+            with contact information redacted.
           </p>
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "5px", marginTop: "-10px" }}>
-            <button type="button" style={{ marginRight: "10px" }}>Yes</button>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              marginBottom: "5px",
+              marginTop: "-10px",
+            }}
+          >
+            <button type="button" style={{ marginRight: "10px" }}>
+              Yes
+            </button>
             <button type="button">No</button>
           </div>
           <p style={{ color: "#333333" }}>
-            Minimum number of participants needed to conduct your study: Not all eligible people on HealthChain will consent. Enter the minimum cohort size to run your study.
+            Minimum number of participants needed to conduct your study: Not all
+            eligible people on HealthChain will consent. Enter the minimum
+            cohort size to run your study.
           </p>
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "5px", marginTop: "-10px" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              marginBottom: "5px",
+              marginTop: "-10px",
+            }}
+          >
             <input type="number" style={{ width: "150px" }} />
           </div>
           <p style={{ color: "#333333" }}>
-            Enter the last date by which patients need to decide when you want to receive the data: If your minimum cohort size is not met, we will notify you on this date. You will still be able to submit another request for data.
+            Enter the last date by which patients need to decide when you want
+            to receive the data: If your minimum cohort size is not met, we will
+            notify you on this date. You will still be able to submit another
+            request for data.
           </p>
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "5px", marginTop: "-10px" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              marginBottom: "5px",
+              marginTop: "-10px",
+            }}
+          >
             <input type="date" style={{ width: "150px" }} />
           </div>
           <p style={{ color: "#333333" }}>
-            How much will you compensate each patient who opts in? This will incentivize people to share their data - especially patients who are not particularly ill or have a lot to gain from health recommendations.
+            How much will you compensate each patient who opts in? This will
+            incentivize people to share their data - especially patients who are
+            not particularly ill or have a lot to gain from health
+            recommendations.
           </p>
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "5px", marginTop: "-10px" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              marginBottom: "5px",
+              marginTop: "-10px",
+            }}
+          >
             <input type="number" style={{ width: "150px" }} />
           </div>
           <p style={{ color: "#333333" }}>
-            Upload your research protocol: Download this template. We will review it and (1) accept it (and send out the request for data to patients), (2) request revisions, or (3) reject.
+            Upload your research protocol: Download this template. We will
+            review it and (1) accept it (and send out the request for data to
+            patients), (2) request revisions, or (3) reject.
           </p>
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "5px", marginTop: "-10px" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              marginBottom: "5px",
+              marginTop: "-10px",
+            }}
+          >
             <input type="file" style={{ width: "150px" }} />
           </div>
         </div>
       )}
 
-
-
-
-      {showHospital && (
-        <div>Welcome to Hospital</div>
-      )}
-
+      {showHospital && <div>Welcome to Hospital</div>}
     </div>
   );
 }
