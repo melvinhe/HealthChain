@@ -3,9 +3,7 @@ import { Link } from "react-router-dom";
 
 export function Home(): JSX.Element {
     const [requests, setRequests] = useState([
-      { id: 1, company: "Company A", walletAddress: "0xABC123" },
-      { id: 2, company: "Company B", walletAddress: "0xDEF456" },
-      { id: 3, company: "Company C", walletAddress: "0xGHI789" },
+      { id: 1, company: "Company A", walletAddress: "0x5EARpNkdPyj1myCfwXyqtF6PtDXexKYWgJxE38G9Kor4sHrd" },
     ]);
 
     const handleAccept = (id: number) => {
@@ -120,101 +118,92 @@ export function Home(): JSX.Element {
     <div style={{ display: "flex" }}>
       {/* Sidebar */}
       <div
-        style={{
-          width: "160px",
-          marginLeft: "20px",
-          marginRight: "20px",
-          padding: "10px",
-          borderRadius: "10px",
-          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-          marginTop: "40px",
-          marginBottom: "0px",
-        }}
-      >
-        <ul style={{ margin: 0, padding: 0 }}>
-          <li style={{ marginTop: "20px", marginBottom: "40px" }}>
-            <button
-              type="button"
-              onClick={() => {
-                showComponent("home");
-              }}
-              style={{
-                color: "black",
-                fontSize: "18px",
-                border: "none",
-                background: "none",
-                cursor: "pointer",
-                padding: 0,
-                textAlign: "left",
-                width: "100%",
-              }}
-            >
-              Home
-            </button>
-          </li>
-          <li style={{ marginBottom: "40px" }}>
-            <button
-              type="button"
-              onClick={() => {
-                showComponent("patient");
-              }}
-              style={{
-                color: "black",
-                fontSize: "18px",
-                border: "none",
-                background: "none",
-                cursor: "pointer",
-                padding: 0,
-                textAlign: "left",
-                width: "100%",
-              }}
-            >
-              Patient Portal
-            </button>
-          </li>
-          <li style={{ marginBottom: "40px" }}>
-            <button
-              type="button"
-              onClick={() => {
-                showComponent("buyer");
-              }}
-              style={{
-                color: "black",
-                fontSize: "18px",
-                border: "none",
-                background: "none",
-                cursor: "pointer",
-                padding: 0,
-                textAlign: "left",
-                width: "100%",
-              }}
-            >
-              Researcher Portal
-            </button>
-          </li>
-          <li style={{ marginBottom: "40px" }}>
-            <button
-              type="button"
-              onClick={() => {
-                showComponent("hospital");
-              }}
-              style={{
-                color: "black",
-                fontSize: "18px",
-                border: "none",
-                background: "none",
-                cursor: "pointer",
-                padding: 0,
-                textAlign: "left",
-                width: "100%",
-              }}
-            >
-              Hospital Portal
-            </button>
-          </li>
-          {/* Add more sidebar links here */}
-        </ul>
-      </div>
+      style={{
+        width: "160px",
+        marginRight: "20px",
+        padding: "10px",
+        borderRadius: "10px",
+        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+        marginTop: "40px",
+        marginBottom: "0px",
+        height: "calc(100vh - 40px)",
+      }}
+    >
+      <ul style={{ margin: 0, padding: 0 }}>
+        <li style={{ marginTop: "20px", marginBottom: "40px" }}>
+          <button
+            type="button"
+            onClick={() => showComponent("home")}
+            style={{
+              color: "black",
+              fontSize: "18px",
+              border: "none",
+              background: "none",
+              cursor: "pointer",
+              padding: 0,
+              textAlign: "left",
+              width: "100%",
+            }}
+          >
+            Home
+          </button>
+        </li>
+        <li style={{ marginBottom: "40px" }}>
+          <button
+            type="button"
+            onClick={() => showComponent("patient")}
+            style={{
+              color: "black",
+              fontSize: "18px",
+              border: "none",
+              background: "none",
+              cursor: "pointer",
+              padding: 0,
+              textAlign: "left",
+              width: "100%",
+            }}
+          >
+            Patient Portal
+          </button>
+        </li>
+        <li style={{ marginBottom: "40px" }}>
+          <button
+            type="button"
+            onClick={() => showComponent("buyer")}
+            style={{
+              color: "black",
+              fontSize: "18px",
+              border: "none",
+              background: "none",
+              cursor: "pointer",
+              padding: 0,
+              textAlign: "left",
+              width: "100%",
+            }}
+          >
+            Researcher Portal
+          </button>
+        </li>
+        <li style={{ marginBottom: "40px" }}>
+          <button
+            type="button"
+            onClick={() => showComponent("hospital")}
+            style={{
+              color: "black",
+              fontSize: "18px",
+              border: "none",
+              background: "none",
+              cursor: "pointer",
+              padding: 0,
+              textAlign: "left",
+              width: "100%",
+            }}
+          >
+            Hospital Portal
+          </button>
+        </li>
+      </ul>
+    </div>
       {/* Main content */}
 
       {showPatient && (
@@ -322,6 +311,7 @@ export function Home(): JSX.Element {
       {showHome && (
         <div
           style={{
+            flex: 1,
             textAlign: "center",
             backgroundColor: "#E6F2F8",
             padding: "20px",
@@ -376,7 +366,11 @@ export function Home(): JSX.Element {
       )}
 
       {showBuyer && (
-        <div>
+        <div style={{
+          flex: 1,
+          backgroundColor: "#E6F2F8",
+          padding: "10px",
+        }}>
           <h1 style={{ color: "#195FBF" }}>
             Build a Cohort of Study Participants
           </h1>
@@ -514,6 +508,11 @@ export function Home(): JSX.Element {
           >
             <input type="file" style={{ width: "150px" }} />
           </div>
+          <div style={{ textAlign: "center", marginTop: "20px" }}>
+        <button type="button" onClick={() => {}}>
+          Submit
+        </button>
+      </div>
         </div>
       )}
 
