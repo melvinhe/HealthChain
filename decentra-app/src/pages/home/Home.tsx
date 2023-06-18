@@ -27,25 +27,47 @@ export function Home(): JSX.Element {
   return (
     <div style={{ display: "flex" }}>
       {/* Sidebar */}
-      <div style={{ width: "200px", backgroundColor: "#f2f2f2" }}>
+      <div
+        style={{
+          width: "160px",
+          backgroundColor: "#f2f2f2",
+          marginLeft: "20px",
+          marginRight: "20px",
+          padding: "10px",
+          borderRadius: "10px",
+          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+        }}
+      >
         <ul style={{ margin: 0, padding: 0 }}>
           <li>
-            <Link to="/">Home</Link>
+            <Link to="/" style={{ color: "black", fontSize: "18px" }}>
+              Home
+            </Link>
           </li>
           <li>
-            <Link to="/other">Other Page</Link>
+            <Link to="/other" style={{ color: "black", fontSize: "18px" }}>
+              Other Page
+            </Link>
           </li>
           <li>
-            <Link to="/page1">Page 1</Link>
+            <Link to="/page1" style={{ color: "black", fontSize: "18px" }}>
+              Page 1
+            </Link>
           </li>
           <li>
-            <Link to="/page2">Page 2</Link>
+            <Link to="/page2" style={{ color: "black", fontSize: "18px" }}>
+              Page 2
+            </Link>
           </li>
           <li>
-            <Link to="/page3">Page 3</Link>
+            <Link to="/page3" style={{ color: "black", fontSize: "18px" }}>
+              Page 3
+            </Link>
           </li>
           <li>
-            <Link to="/page4">Page 4</Link>
+            <Link to="/page4" style={{ color: "black", fontSize: "18px" }}>
+              Page 4
+            </Link>
           </li>
           {/* Add more sidebar links here */}
         </ul>
