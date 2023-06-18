@@ -1,3 +1,5 @@
+import uuid
+
 from flask import Flask
 from flask import request
 
@@ -31,8 +33,11 @@ def encode_data():
 
     signature_patient, signature_verifier, public_key_verified = chain_data_verifier_transaction(fhir_data,
                                                                                                  fhir_metadata)
+    t1_id = str(uuid.uuid4())
+    t2_id = str(uuid.uuid4())
+    payload = {"transaction 1": t1_id, "transaction 2": t2_id}
 
-    return "OK", 201, {}
+    return str(payload), 201, {}
 
 
 if __name__ == '__main__':
