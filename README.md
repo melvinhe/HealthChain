@@ -2,7 +2,7 @@
 
 ## About 
 
-The HealthChain app provides a secure platform for users to upload their electronic health record (EHR) data. By leveraging blockchain technology, the app ensures the privacy and integrity of the data throughout the process. Here's how it works:
+The HealthChain solution provides a secure platform for users to upload their electronic health record (EHR) data. By leveraging blockchain technology, the solution ensures the privacy and integrity of the data throughout the process. Here's how it works:
 
 ## Technical Description
 
