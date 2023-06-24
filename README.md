@@ -1,7 +1,5 @@
 # HealthChain
 
-Welcome to the React app repository! This README file will guide you through the installation, setup, and functionality of the app.
-
 ## About 
 
 The HealthChain app provides a secure platform for users to upload their electronic health record (EHR) data. By leveraging blockchain technology, the app ensures the privacy and integrity of the data throughout the process. Here's how it works:
