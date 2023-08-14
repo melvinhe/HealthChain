@@ -1,6 +1,7 @@
 # HealthChain
 
 ## About 
+![IMG_4258](https://github.com/melvinhe/HealthChain/assets/64095665/77ce5762-74e1-4344-8a19-bf18ebfc82e8)
 
 The HealthChain solution provides a secure platform for users to upload their electronic health record (EHR) data. By leveraging blockchain technology, the solution ensures the privacy and integrity of the data throughout the process. Here's how it works:
 
